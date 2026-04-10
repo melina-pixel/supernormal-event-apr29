@@ -950,20 +950,8 @@ body::after {
   background: linear-gradient(90deg, transparent, rgba(26,143,255,0.15), transparent);
 }
 
-.card-count .live-indicator {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  
-  margin-right: 4px;
-  vertical-align: middle;
-}
-.card-count .live-indicator.active {
-  
-  box-shadow: 0 0 6px rgba(74,222,128,0.4);
-  animation: livePulse 2s ease-in-out infinite;
-}
+
+
 @keyframes livePulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -1007,15 +995,7 @@ body::after {
 .challenge-card .card-count .team-name-pill:nth-child(3) { animation-delay: 0.2s; }
 .challenge-card .card-count .team-name-pill[draggable="true"] { cursor: grab; }
 .challenge-card .card-count .team-name-pill[draggable="true"]:active { cursor: grabbing; }
-.challenge-card .card-count .live-indicator {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 6px rgba(74,222,128,0.4);
-  animation: livePulse 2s ease-in-out infinite;
-}
+.challenge-card 
 
 .challenge-card .card-count .pill-row {
   display: flex;
@@ -1024,10 +1004,11 @@ body::after {
   align-items: flex-end;
 }
 .challenge-card .card-count .count-text {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
   font-size: 12px;
+  line-height: 1;
 }
 
 .challenge-card .card-count .team-blob {
@@ -1056,6 +1037,17 @@ body::after {
 .challenge-card .card-count .team-blob:nth-child(3) { animation-delay: 0.15s; }
 .challenge-card .card-count .team-blob:nth-child(4) { animation-delay: 0.2s; }
 .challenge-card .card-count .team-blob:nth-child(5) { animation-delay: 0.25s; }
+
+.card-count .live-indicator {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74,222,128,0.4);
+  animation: livePulse 2s ease-in-out infinite;
+  vertical-align: middle;
+}
 </style>
 </head>
 <body>
