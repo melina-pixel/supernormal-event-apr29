@@ -309,17 +309,17 @@ body::after {
   font-size: 13px; color: var(--text-muted); margin-bottom: 0;
 }
 .challenge-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; align-content: center;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; align-content: start; gap: 8px;
   grid-template-rows: 1fr 1fr;
   gap: 8px; margin-bottom: 8px; flex: 1; min-height: 0;
 }
 .challenge-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px;
+  border-radius: 12px; padding: 16px;
   transition: all 0.25s ease; cursor: default;
   box-shadow: var(--shadow-sm);
   display: flex; flex-direction: column; overflow: hidden;
-  align-self: start;
+  align-self: stretch;
 }
 .challenge-card:hover {
   border-color: var(--border-hover);
@@ -391,17 +391,16 @@ body::after {
 .challenge-card .card-count .team-name-pill {
   display: inline-block;
   font-size: 11px;
-  margin-right: 6px;
   font-weight: 600;
   color: var(--accent);
-  
+  background: var(--accent-light);
   border: 1px solid rgba(26,143,255,0.12);
-  padding: 2px 10px;
+  padding: 3px 10px;
   border-radius: 20px;
-  margin-right: 4px;
-  animation: pillPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  opacity: 0;
+  margin-right: 6px;
   white-space: nowrap;
+  animation: pillPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
 }
 .challenge-card { overflow: hidden; }
 .challenge-card .card-count .team-name-pill:nth-child(1) { animation-delay: 0s; }
@@ -1446,9 +1445,9 @@ db.ref('teams').on('value', snap => {
       const challengeTeams = entries.filter(([, t]) => t.challenge === c.id);
       const teamNames = challengeTeams.map(([, t]) => t.name || 'Team');
       for (let a = 0; a < Math.min(teamNames.length, 3); a++) {
-        avatarHtml += '<span class="team-name-pill" style="background:' + avatarColors[a % avatarColors.length] + '">' + teamNames[a].replace(/</g,'&lt;') + '</span>';
+        avatarHtml += '<span class="team-name-pill">' + teamNames[a].replace(/</g,'&lt;') + '</span>';
       }
-      if (teamCount > 3) avatarHtml += '<span class="team-name-pill" style="background:#6b6b6b">+' + (teamCount - 3) + ' more</span>';
+      if (teamCount > 3) avatarHtml += '<span class="team-name-pill">+' + (teamCount - 3) + ' more</span>';
       avatarHtml += '</span>';
     }
     const countLabel = teamCount === 0 ? '<span class="live-indicator"></span> 0 teams' : '<span class="live-indicator active"></span> ' + teamCount + ' team' + (teamCount !== 1 ? 's' : '');
