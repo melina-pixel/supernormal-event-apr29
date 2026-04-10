@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supernormal Agency Thursdays</title>
+<title>v6364 Supernormal Agency Thursdays</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -361,53 +361,18 @@ body::after {
   font-size: 14px; color: var(--text-muted); line-height: 1.4; margin-bottom: 4px;
 }
 .challenge-card 
-.challenge-card .card-count {
-  margin-top: 10px;
-  padding: 6px 12px;
-  border-radius: 10px;
-  background: var(--accent-light);
-  font-size: 12px;
-  color: var(--accent);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.challenge-card .card-count.has-teams { }
-.challenge-card .card-count .dot {
-  display: none;
-}
-.challenge-card .card-count .team-avatars {
-  display: inline-flex; margin-right: 2px;
-}
-.challenge-card .card-count .team-avatar {
-  width: 18px; height: 18px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 700; color: #fff;
-  margin-left: -4px; border: 2px solid #fff;
-  animation: scaleIn 0.3s ease forwards;
-}
-.challenge-card .card-count .team-avatar:first-child { margin-left: 0; }
-.challenge-card .card-count .team-name-pill {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent);
-  background: var(--accent-light);
-  border: 1px solid rgba(26,143,255,0.12);
-  padding: 3px 10px;
-  border-radius: 20px;
-  margin-right: 6px;
-  white-space: nowrap;
-  animation: pillPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  opacity: 0;
-}
+
+
+
+
+
+
+
 .challenge-card { overflow: hidden; }
-.challenge-card .card-count .team-name-pill:nth-child(1) { animation-delay: 0s; }
-.challenge-card .card-count .team-name-pill:nth-child(2) { animation-delay: 0.1s; }
-.challenge-card .card-count .team-name-pill:nth-child(3) { animation-delay: 0.2s; }
-.challenge-card .card-count .team-name-pill:nth-child(4) { animation-delay: 0.3s; }
+
+
+
+
 @keyframes pillPop {
   0% { opacity: 0; transform: scale(0.3) translateY(12px); }
   40% { opacity: 1; transform: scale(1.15) translateY(-4px); }
@@ -995,6 +960,55 @@ body::after {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+.challenge-card .card-count {
+  margin-top: auto;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #e8f4ff;
+  font-size: 13px;
+  color: #1a8fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.card-steps {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  opacity: 0.7;
+  letter-spacing: 0.01em;
+}
+
+.challenge-card .card-count .team-name-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: #fff;
+  border: 1px solid rgba(26,143,255,0.15);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-right: 4px;
+  white-space: nowrap;
+  animation: pillPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+.challenge-card .card-count .team-name-pill:nth-child(1) { animation-delay: 0s; }
+.challenge-card .card-count .team-name-pill:nth-child(2) { animation-delay: 0.1s; }
+.challenge-card .card-count .team-name-pill:nth-child(3) { animation-delay: 0.2s; }
+.challenge-card .card-count .live-indicator {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74,222,128,0.4);
+  animation: livePulse 2s ease-in-out infinite;
+}
 </style>
 </head>
 <body>
@@ -1207,12 +1221,12 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const challenges = [
-  { id: 0, title: "Shark Tank Moment", emoji: "\u{1F988}", tag: "STARTUP", short: "Create a startup from scratch. Build the brand, pitch deck &amp; one-liner using Supernormal. Then pitch it to the room." },
-  { id: 1, title: "The Devil Wears Decks", emoji: "\u{1F460}", tag: "DESIGN", short: "Find a terrible presentation online. Use Supernormal to redesign it into something stunning. Before/after reveal." },
-  { id: 2, title: "The Apprentice: Agency Edition", emoji: "\u{1F527}", tag: "AUTOMATION", short: "Pick a broken workflow. Use Supernormal + Claude to build a real automation that fixes it. Demo it live." },
-  { id: 3, title: "Ocean\u2019s Eleven: The Intel Job", emoji: "\u{1F575}\uFE0F", tag: "STRATEGY", short: "Pick a competitor. Use Supernormal to build a full competitive teardown with visuals and strategy." },
-  { id: 4, title: "Mad Men: AI Edition", emoji: "\u{1F3A8}", tag: "CAMPAIGN", short: "Pick a brand. Use Supernormal to create a full ad campaign — creatives, copy, images, taglines. Pitch it." },
-  { id: 5, title: "Extreme Makeover: Brand Edition", emoji: "\u2728", tag: "BRANDING", short: "Pick a company with bad branding. Use Supernormal to deliver a full rebrand — logo, voice, templates." }
+  { id: 0, title: "Shark Tank Moment", emoji: "\u{1F988}", tag: "STARTUP", short: "Create a startup from scratch. Build the brand, pitch deck &amp; one-liner using Supernormal. Then pitch it to the room.<br><span class='card-steps'>① Record meeting ② Build with AI ③ Pitch live</span>" },
+  { id: 1, title: "The Devil Wears Decks", emoji: "\u{1F460}", tag: "DESIGN", short: "Find a terrible presentation online. Use Supernormal to redesign it into something stunning. Before/after reveal.<br><span class='card-steps'>① Find ugly deck ② Record roast ③ Redesign with AI</span>" },
+  { id: 2, title: "The Apprentice: Agency Edition", emoji: "\u{1F527}", tag: "AUTOMATION", short: "Pick a broken workflow. Use Supernormal + Claude to build a real automation that fixes it. Demo it live.<br><span class='card-steps'>① Pick pain point ② Record fix plan ③ Build &amp; demo</span>" },
+  { id: 3, title: "Ocean\u2019s Eleven: The Intel Job", emoji: "\u{1F575}\uFE0F", tag: "STRATEGY", short: "Pick a competitor. Use Supernormal to build a full competitive teardown with visuals and strategy.<br><span class='card-steps'>① Pick target ② Record analysis ③ Build intel report</span>" },
+  { id: 4, title: "Mad Men: AI Edition", emoji: "\u{1F3A8}", tag: "CAMPAIGN", short: "Pick a brand. Use Supernormal to create a full ad campaign — creatives, copy, images, taglines. Pitch it.<br><span class='card-steps'>① Pick brand ② Record ideation ③ Create campaign</span>" },
+  { id: 5, title: "Extreme Makeover: Brand Edition", emoji: "\u2728", tag: "BRANDING", short: "Pick a company with bad branding. Use Supernormal to deliver a full rebrand — logo, voice, templates.<br><span class='card-steps'>① Pick company ② Record roast ③ Deliver glow-up</span>" }
 ];
 
 const fullDescs = [
