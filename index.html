@@ -1431,12 +1431,7 @@ function addBlobForTeam(name, index) {
   const blob = document.createElement('div');
   blob.className = 'blob-char';
   
-  // Hash-based blob for consistent assignment
-  let bHash = 0; 
-  var allUids = Object.keys(teamsData || {});
-  var bUid = allUids[index] || String(index);
-  for (let ch = 0; ch < bUid.length; ch++) { bHash = ((bHash << 5) - bHash) + bUid.charCodeAt(ch); bHash |= 0; }
-  const blobIdx = Math.abs(bHash) % 6;
+  const blobIdx = index % 6;
   const anim = idleAnims[index % 3];
   const dur = (2 + Math.random() * 2).toFixed(1);
   const delay = (Math.random() * 1.5).toFixed(1);
@@ -1467,6 +1462,10 @@ let cardsBuilt = false;
 db.ref('teams').on('value', snap => {
   teamsData = snap.val() || {};
   const entries = Object.entries(teamsData).filter(([k, t]) => t && t.name);
+  // Assign blobs by join order — first 6 teams all get different blobs
+  const sorted = [...entries].sort((a, b) => (a[1].joinedAt || 0) - (b[1].joinedAt || 0));
+  const teamBlobMap = {};
+  sorted.forEach(([uid], i) => { teamBlobMap[uid] = i % blobImages.length; });
 
   // Welcome counter
   document.getElementById('teamCount').textContent = '\u{1F44B} ' + entries.length + ' team' + (entries.length !== 1 ? 's' : '') + ' joined';
@@ -1513,9 +1512,7 @@ db.ref('teams').on('value', snap => {
       for (let a = 0; a < Math.min(challengeTeams.length, 10); a++) {
         const [uid, t] = challengeTeams[a];
         const name = (t.name || 'Team').replace(/</g, '&lt;');
-        // Hash UID to get consistent blob per team
-        let hash = 0; for (let ch = 0; ch < uid.length; ch++) { hash = ((hash << 5) - hash) + uid.charCodeAt(ch); hash |= 0; }
-        const blobIdx = Math.abs(hash) % blobImages.length;
+        const blobIdx = teamBlobMap[uid] !== undefined ? teamBlobMap[uid] : 0;
         avatarHtml += '<div class="team-blob" draggable="true" data-uid="' + uid + '"><img src="' + blobImages[blobIdx] + '" class="team-blob-img"><span class="team-blob-name">' + name + '</span></div>';
       }
       
