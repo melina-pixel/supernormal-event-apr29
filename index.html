@@ -842,10 +842,10 @@ body::after {
 /* ── BLOB MASCOTS / MEETING TABLE ── */
 .blob-container {
   position: absolute;
-  bottom: 52px; outline: 2px solid red; /* above host bar */
+  bottom: 48px; /* above host bar */
   left: 0;
   right: 0;
-  height: 200px;
+  height: 250px;
   pointer-events: none;
   z-index: 2;
   display: flex;
@@ -861,10 +861,10 @@ body::after {
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  width: 70%;
-  max-width: 800px;
-  height: 8px;
-  background: linear-gradient(180deg, #b8cfe0 0%, #a0b8cc 100%);
+  width: 80%;
+  max-width: 1000px;
+  height: 10px;
+  background: linear-gradient(180deg, #9ab8d4 0%, #7fa3c0 100%);
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   z-index: 1;
@@ -886,7 +886,7 @@ body::after {
 /* Seat positions - blobs sit above the table */
 .blob-seat {
   position: absolute;
-  bottom: 38px; /* just above the table */
+  bottom: 50px; /* just above the table */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -901,13 +901,13 @@ body::after {
 }
 
 .blob-seat img {
-  width: 70px;
-  height: 70px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
 }
 
 .blob-seat .blob-name {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text);
   background: #fff;
@@ -1308,9 +1308,8 @@ const seatPositions = [
 const idleAnims = ['blobIdle1', 'blobIdle2', 'blobIdle3'];
 
 function addBlobForTeam(name, index) {
-  console.log('BLOB: Adding', name, 'at index', index);
   const container = document.getElementById('blobContainer');
-  if (!container) { console.log('BLOB: container not found!'); return; }
+  if (!container) return;
 
   const seat = document.createElement('div');
   seat.className = 'blob-seat';
@@ -1357,7 +1356,6 @@ db.ref('teams').on('value', snap => {
   entries.forEach(([uid, t], i) => {
     if (!renderedBlobs.has(uid) && t.name) {
       renderedBlobs.add(uid);
-      console.log('BLOB: New team detected:', t.name, uid);
       addBlobForTeam(t.name, renderedBlobs.size - 1);
       playPop();
     }
