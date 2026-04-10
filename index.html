@@ -1431,7 +1431,12 @@ function addBlobForTeam(name, index) {
   const blob = document.createElement('div');
   blob.className = 'blob-char';
   
-  const blobIdx = index % 6;
+  // Hash-based blob for consistent assignment
+  let bHash = 0; 
+  var allUids = Object.keys(teamsData || {});
+  var bUid = allUids[index] || String(index);
+  for (let ch = 0; ch < bUid.length; ch++) { bHash = ((bHash << 5) - bHash) + bUid.charCodeAt(ch); bHash |= 0; }
+  const blobIdx = Math.abs(bHash) % 6;
   const anim = idleAnims[index % 3];
   const dur = (2 + Math.random() * 2).toFixed(1);
   const delay = (Math.random() * 1.5).toFixed(1);
@@ -1508,7 +1513,9 @@ db.ref('teams').on('value', snap => {
       for (let a = 0; a < Math.min(challengeTeams.length, 10); a++) {
         const [uid, t] = challengeTeams[a];
         const name = (t.name || 'Team').replace(/</g, '&lt;');
-        const blobIdx = a % blobImages.length;
+        // Hash UID to get consistent blob per team
+        let hash = 0; for (let ch = 0; ch < uid.length; ch++) { hash = ((hash << 5) - hash) + uid.charCodeAt(ch); hash |= 0; }
+        const blobIdx = Math.abs(hash) % blobImages.length;
         avatarHtml += '<div class="team-blob" draggable="true" data-uid="' + uid + '"><img src="' + blobImages[blobIdx] + '" class="team-blob-img"><span class="team-blob-name">' + name + '</span></div>';
       }
       
