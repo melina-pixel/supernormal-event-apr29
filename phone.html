@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Supernormal Agency Thursdays</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<style>
+:root {
+  --bg: #faf8f6;
+  --bg-subtle: #f3f0ed;
+  --surface: #ffffff;
+  --surface-hover: #f5f3f1;
+  --border: rgba(0,0,0,0.06);
+  --border-hover: rgba(0,0,0,0.12);
+  --text: #1a1a1a;
+  --text-muted: #6b6b6b;
+  --text-subtle: #9a9a9a;
+  --accent: #1a8fff;
+  --accent-light: #e8f4ff;
+  --accent-glow: rgba(26,143,255,0.15);
+  --accent-soft: rgba(26,143,255,0.08);
+  /* Challenge theme colors */
+  --ch-blue: #1a8fff;
+  --ch-pink: #e84393;
+  --ch-orange: #e67e22;
+  --ch-purple: #6c5ce7;
+  --ch-green: #00b894;
+  --ch-yellow: #f9a825;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100dvh;overflow:hidden;background:linear-gradient(135deg, #f0f4f8 0%, #e4eef8 25%, #dde8f4 50%, #e8f0fa 75%, #f0f4f8 100%);background-size:400% 400%;animation:bgShift 15s ease infinite;color:var(--text);font-family:system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.6;font-weight:400;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column}
+
+/* Screens */
+.screen{display:none;flex-direction:column;height:100dvh;overflow:hidden;-webkit-overflow-scrolling:touch;padding:0 20px env(safe-area-inset-bottom);opacity:0;transform:translateY(16px);transition:opacity .4s ease,transform .4s ease}
+.screen.active{display:flex;animation:screenSlideUp .4s ease forwards}
+
+/* Typography */
+h1,h2,h3{font-weight:600;letter-spacing:-0.02em;color:var(--text)}
+.label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted)}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.03);transition:border-color .2s,background .2s,transform .12s,box-shadow .2s}
+.card:active{transform:scale(0.98)}
+.card.selected{border-color:var(--accent);background:var(--accent-light)}
+
+/* Inputs */
+input[type=text]{width:100%;padding:16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:16px;font-weight:400;outline:none;transition:border-color .2s,box-shadow .2s}
+input[type=text]::placeholder{color:var(--text-subtle)}
+input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,143,255,0.1)}
+
+/* Buttons */
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:14px 20px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s,box-shadow .2s;letter-spacing:-0.01em;box-shadow:0 2px 8px rgba(26,143,255,0.25)}
+.btn:active{transform:scale(0.97);opacity:.85}
+.btn:disabled{opacity:.35;pointer-events:none;box-shadow:none}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.btn-sm{min-height:40px;padding:10px 16px;font-size:13px;font-weight:600;width:auto;border-radius:8px}
+.btn-vote{min-height:40px;padding:0 16px;font-size:13px;font-weight:600;width:auto;border-radius:8px;flex-shrink:0;box-shadow:0 1px 4px rgba(26,143,255,0.2);transition:transform .3s cubic-bezier(0.34,1.56,0.64,1)}
+.btn-vote.voted-anim{animation:votePress .4s cubic-bezier(0.34,1.56,0.64,1)}
+
+/* Tag pill */
+.pill{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:500;letter-spacing:0.05em;background:var(--accent-soft);color:var(--accent)}
+
+/* Pulse animation */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pulse{animation:pulse 2s ease-in-out infinite}
+
+/* Bounce */
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.bounce{animation:bounce 1.5s ease-in-out infinite}
+
+/* Scale in */
+@keyframes scaleIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* === FUN EFFECTS === */
+
+/* 1. Animated gradient background */
+@keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* 2. Join button shimmer */
+@keyframes btnShimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+
+/* 3. Emoji bounce on detail view */
+@keyframes emojiBounce{0%{transform:scale(0) rotate(-15deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0deg)}}
+
+/* 4. Timer pulse ring */
+@keyframes timerPulse{0%,100%{box-shadow:0 0 0 0 rgba(26,143,255,0.18)}50%{box-shadow:0 0 0 22px rgba(26,143,255,0)}}
+
+/* 5. Vote button press */
+@keyframes votePress{0%{transform:scale(1)}40%{transform:scale(0.85)}70%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+/* 6. Confetti burst for confirmed state */
+@keyframes confettiBurst1{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(-28px,-36px) scale(0);opacity:0}}
+@keyframes confettiBurst2{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(32px,-30px) scale(0);opacity:0}}
+@keyframes confettiBurst3{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(-20px,28px) scale(0);opacity:0}}
+@keyframes confettiBurst4{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(26px,24px) scale(0);opacity:0}}
+
+/* 7. Waiting dot larger pulse */
+@keyframes waitPulseRing{0%{box-shadow:0 0 0 0 rgba(26,143,255,0.35)}70%{box-shadow:0 0 0 12px rgba(26,143,255,0)}100%{box-shadow:0 0 0 0 rgba(26,143,255,0)}}
+
+/* 8. Step pill pop-in */
+@keyframes stepPopIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* 9. Screen slide-up entrance */
+@keyframes screenSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ---- Screen 0: JOIN ---- */
+#s0{align-items:center;justify-content:center;text-align:center;padding-top:0;padding-bottom:0}
+#s0 .brand{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px}
+#s0 .brand-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+#s0 .brand-name{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.02em}
+#s0 .event-title{font-size:24px;font-weight:600;letter-spacing:-0.03em;color:var(--text);margin-bottom:4px;max-width:300px;line-height:1.3}
+#s0 .event-meta{font-size:14px;color:var(--text-subtle);margin-bottom:32px}
+#s0 form{width:100%;display:flex;flex-direction:column;gap:12px}
+#s0 .btn{background:linear-gradient(110deg, var(--accent) 0%, var(--accent) 40%, #4da6ff 50%, var(--accent) 60%, var(--accent) 100%);background-size:200% 100%;animation:btnShimmer 3s ease-in-out infinite;box-shadow:0 4px 16px rgba(26,143,255,0.3)}
+#s0 .waiting{display:none;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-size:14px;color:var(--text-muted)}
+#s0 .waiting .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite,waitPulseRing 2s ease-in-out infinite}
+
+/* ---- Screen 1: PICK (compact radio list) ---- */
+#s1{padding-top:48px;padding-bottom:0;overflow:hidden;position:relative}
+#s1 .header{margin-bottom:12px}
+#s1 .header h2{font-size:22px;margin-bottom:2px}
+#s1 .header p{font-size:13px;color:var(--text-muted)}
+#s1 .cards{display:flex;flex-direction:column;gap:0;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:72px}
+
+/* Challenge cards with colored left borders */
+.ch-card{padding:12px 14px;cursor:pointer;position:relative;border-radius:10px;border:1px solid var(--border);margin-bottom:6px;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,0.04);border-left:3px solid transparent;transition:border-color .2s,background .2s,box-shadow .2s,transform .12s}
+.ch-card:active{transform:scale(0.96);transition-duration:.08s}
+/* Per-challenge theme colors on left border */
+.ch-card[data-id="0"]{border-left-color:var(--ch-blue)}
+.ch-card[data-id="1"]{border-left-color:var(--ch-pink)}
+.ch-card[data-id="2"]{border-left-color:var(--ch-orange)}
+.ch-card[data-id="3"]{border-left-color:var(--ch-purple)}
+.ch-card[data-id="4"]{border-left-color:var(--ch-green)}
+.ch-card[data-id="5"]{border-left-color:var(--ch-yellow)}
+/* Emoji icon bg circles */
+.ch-card[data-id="0"] .ch-emoji-bg{background:rgba(26,143,255,0.1)}
+.ch-card[data-id="1"] .ch-emoji-bg{background:rgba(232,67,147,0.1)}
+.ch-card[data-id="2"] .ch-emoji-bg{background:rgba(230,126,34,0.1)}
+.ch-card[data-id="3"] .ch-emoji-bg{background:rgba(108,92,231,0.1)}
+.ch-card[data-id="4"] .ch-emoji-bg{background:rgba(0,184,148,0.1)}
+.ch-card[data-id="5"] .ch-emoji-bg{background:rgba(249,168,37,0.1)}
+
+.ch-card .ch-top{display:flex;align-items:center;gap:10px}
+.ch-card .ch-emoji{font-size:20px;flex-shrink:0;line-height:1;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px}
+.ch-card .ch-content{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+.ch-card .ch-title{font-size:14px;font-weight:600;letter-spacing:-0.01em;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-card .ch-short{display:none}
+.ch-card .ch-pill{flex-shrink:0}
+.ch-card .ch-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--text-subtle);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s}
+.ch-card .ch-radio::after{content:'';width:10px;height:10px;border-radius:50%;background:transparent;transition:background .2s}
+.ch-card.selected{border-color:var(--accent);border-left-color:var(--accent);border-left-width:4px;background:var(--accent-light);box-shadow:-4px 0 14px rgba(26,143,255,0.15),0 2px 8px rgba(26,143,255,0.1)}
+.ch-card.selected .ch-radio{border-color:var(--accent);background:var(--accent)}
+.ch-card.selected .ch-radio::after{background:#fff}
+.ch-card .ch-expand{max-height:0;overflow:hidden;transition:max-height .3s ease,opacity .2s;opacity:0}
+.ch-card.selected .ch-expand{max-height:60px;opacity:1}
+.ch-card .ch-desc{font-size:12px;color:var(--text-muted);line-height:1.4;margin-top:6px;padding-left:30px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ch-card .ch-check{display:none}
+#s1 .confirm-bar{position:fixed;bottom:0;left:0;right:0;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 20%);display:none;z-index:10}
+#s1 .confirm-bar.show{display:block}
+
+/* Challenge detail view (screen 1b) */
+#s1 .challenge-list-wrap, #s1 .challenge-detail-wrap{transition:transform .3s ease,opacity .3s ease;will-change:transform,opacity}
+#s1 .challenge-list-wrap{position:relative;flex:1;display:flex;flex-direction:column;overflow:hidden}
+#s1 .challenge-detail-wrap{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;transform:translateX(100%);opacity:0;pointer-events:none;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:72px}
+#s1 .challenge-detail-wrap.visible{transform:translateX(0);opacity:1;pointer-events:auto}
+#s1 .challenge-list-wrap.hidden{transform:translateX(-30%);opacity:0;pointer-events:none}
+#s1 .detail-back{background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;padding:4px 0;margin-bottom:16px;display:flex;align-items:center;gap:6px;font-weight:400;font-family:inherit}
+#s1 .detail-back span{font-size:13px;color:var(--text-muted)}
+/* Detail card with theme color top bar */
+#s1 .detail-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:0;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+#s1 .detail-accent-bar{height:4px;border-radius:16px 16px 0 0}
+#s1 .detail-card-inner{padding:24px 20px}
+#s1 .detail-emoji{font-size:48px;margin-bottom:12px;animation:emojiBounce .6s cubic-bezier(0.34,1.56,0.64,1)}
+#s1 .detail-tag{margin-bottom:12px}
+#s1 .detail-title{font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--text);margin-bottom:12px}
+#s1 .detail-desc{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:auto}
+#s1 .detail-select-btn{margin-top:24px;flex-shrink:0}
+/* Confirmed state */
+#s1 .confirmed-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:40px 0;flex:1}
+#s1 .confirmed-wrap .confirmed-emoji{font-size:40px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:rgba(26,143,255,0.1);border-radius:50%;color:var(--accent);position:relative;animation:scaleIn .4s cubic-bezier(0.34,1.56,0.64,1)}
+/* Confetti dots */
+#s1 .confirmed-wrap .confirmed-emoji::before,#s1 .confirmed-wrap .confirmed-emoji::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;top:50%;left:50%}
+#s1 .confirmed-wrap .confirmed-emoji::before{background:var(--ch-pink);animation:confettiBurst1 .7s .2s ease-out both;box-shadow:0 0 0 0 var(--ch-orange)}
+#s1 .confirmed-wrap .confirmed-emoji::after{background:var(--ch-green);animation:confettiBurst2 .7s .3s ease-out both}
+#s1 .confetti-dot-3,#s1 .confetti-dot-4{position:absolute;width:6px;height:6px;border-radius:50%;top:50%;left:50%}
+#s1 .confetti-dot-3{background:var(--ch-purple);animation:confettiBurst3 .7s .25s ease-out both}
+#s1 .confetti-dot-4{background:var(--ch-yellow);animation:confettiBurst4 .7s .35s ease-out both}
+#s1 .confirmed-wrap .confirmed-text{font-size:16px;font-weight:600;color:var(--text)}
+#s1 .confirmed-wrap .confirmed-sub{font-size:13px;color:var(--text-muted)}
+
+/* ---- Screen 2: TIMER ---- */
+#s2{padding-top:44px;padding-bottom:16px;justify-content:space-between}
+#s2 .my-challenge{display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:16px}
+#s2 .my-challenge .emoji{font-size:24px}
+#s2 .my-challenge .title{font-size:15px;font-weight:600;letter-spacing:-0.01em}
+.stepper{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.step{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;box-shadow:0 1px 2px rgba(0,0,0,0.03);animation:stepPopIn .4s cubic-bezier(0.34,1.56,0.64,1) both;transition:background .2s,border-color .2s,box-shadow .2s}
+.step:nth-child(1){animation-delay:.05s}.step:nth-child(2){animation-delay:.1s}.step:nth-child(3){animation-delay:.15s}.step:nth-child(4){animation-delay:.2s}.step:nth-child(5){animation-delay:.25s}
+.step:active{transform:scale(0.95)}
+.step.done{background:var(--accent-light);border-color:rgba(26,143,255,0.2)}.step.done .step-num{background:var(--accent);color:#fff}
+.step:not(:last-child)::after{display:none}
+.step .step-num{width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step .step-text{font-size:12px;color:var(--text-muted);line-height:1.3}
+.timer-section{text-align:center;padding:20px 0 8px;margin-top:auto;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.04)}
+.timer-display{font-size:52px;font-weight:700;font-family:'SF Mono',SFMono-Regular,ui-monospace,'Menlo',monospace;font-variant-numeric:tabular-nums;letter-spacing:2px;color:var(--text);transition:color .3s;display:inline-block;padding:16px 28px;border-radius:50%;animation:timerPulse 2.5s ease-in-out infinite}
+.timer-display.yellow{color:#e67e22}
+.timer-display.red{color:#e74c3c}
+.timer-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-subtle);margin-top:6px}
+
+/* ---- Screen 3: TIME'S UP ---- */
+#s3{align-items:center;justify-content:center;text-align:center;gap:12px}
+#s3 .big-emoji{font-size:44px}
+#s3 h1{font-size:28px;font-weight:600;letter-spacing:-0.03em}
+#s3 p{color:var(--text-muted);font-size:14px}
+#s3 .remind-card{padding:12px 16px;display:flex;align-items:center;gap:10px;margin-top:4px}
+#s3 .remind-card .emoji{font-size:18px}
+#s3 .remind-card .title{font-size:13px;font-weight:600}
+
+/* ---- Screen 4: VOTE ---- */
+#s4{padding-top:44px;padding-bottom:16px;overflow:hidden}
+#s4 .header{margin-bottom:12px}
+#s4 .header h2{font-size:22px;margin-bottom:2px}
+#s4 .header p{font-size:13px;color:var(--text-muted)}
+#s4 .teams-list{display:flex;flex-direction:column;gap:6px;flex:1;overflow-y:auto;padding-bottom:16px}
+.team-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.team-row .info{flex:1;min-width:0}
+.team-row .tname{font-size:14px;font-weight:600;letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team-row .tchallenge{font-size:12px;color:var(--text-muted);margin-top:1px}
+.team-row .votes-count{font-size:12px;color:var(--text-subtle);margin-right:4px;white-space:nowrap}
+.team-row .you-label{font-size:12px;color:var(--text-subtle);font-weight:500;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle)}
+.team-row .voted-check{font-size:13px;color:#00b894;font-weight:600;display:flex;align-items:center;gap:4px}
+.team-row .voted-check span{animation:scaleIn .3s cubic-bezier(0.34,1.56,0.64,1)}
+.voted-msg{text-align:center;margin-top:20px;color:var(--accent);font-weight:600;font-size:14px;display:none}
+
+/* ---- Screen 5: RESULTS ---- */
+#s5{align-items:center;justify-content:center;text-align:center;gap:8px}
+#s5 .trophy{font-size:56px;margin-bottom:8px}
+#s5 .winner-name{font-size:28px;font-weight:600;letter-spacing:-0.03em;color:var(--accent);margin:4px 0}
+#s5 .winner-ch{font-size:14px;color:var(--text-muted)}
+#s5 .runner-card{padding:14px 20px;margin-top:28px;text-align:center}
+#s5 .runner-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-subtle);margin-bottom:6px}
+#s5 .runner-name{font-size:15px;font-weight:600;color:var(--text)}
+#s5 .prize{margin-top:32px;display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--accent-light);border:1px solid rgba(26,143,255,0.15);border-radius:10px;font-size:14px;font-weight:600;color:var(--accent)}
+
+/* Connection banner */
+.conn-banner{position:fixed;top:0;left:0;right:0;z-index:200;padding:6px 16px;background:#b45309;color:#fff;font-size:12px;font-weight:600;text-align:center;transform:translateY(-100%);transition:transform .3s ease;pointer-events:none}
+.conn-banner.visible{transform:translateY(0)}
+
+/* Settings button & menu */
+.settings-btn{position:fixed;top:12px;right:16px;z-index:100;width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);font-size:16px;display:none;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.settings-btn:active{background:var(--surface-hover)}
+.settings-menu{position:fixed;top:56px;right:16px;z-index:110;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;min-width:200px;display:none;flex-direction:column;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04)}
+.settings-menu.open{display:flex}
+.settings-menu .sm-team{font-size:13px;color:var(--text-muted);margin-bottom:4px}
+.settings-menu .sm-team strong{color:var(--text);font-weight:600}
+.settings-menu .sm-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;text-align:left;transition:background .15s}
+.settings-menu .sm-btn:active{background:var(--surface-hover)}
+
+/* Back link */
+.nav-back{position:fixed;top:14px;left:16px;z-index:100;display:none;align-items:center;gap:4px;background:none;border:none;color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer;padding:4px 0}
+.nav-back:active{opacity:.6}
+
+/* Late joiner message */
+.late-msg{text-align:center;padding:10px 16px;margin-bottom:8px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.15);border-radius:10px;font-size:13px;font-weight:500;color:#b45309}
+
+/* Clock ring animation for time's up */
+@keyframes clockRing {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(15deg); }
+  20% { transform: rotate(-15deg); }
+  30% { transform: rotate(10deg); }
+  40% { transform: rotate(-10deg); }
+  50% { transform: rotate(5deg); }
+  60% { transform: rotate(-5deg); }
+  70% { transform: rotate(0deg); }
+}
+.clock-ring {
+  animation: clockRing 0.6s ease-in-out 3;
+  display: inline-block;
+}
+
+/* Challenge description card on timer screen */
+.challenge-desc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px;max-height:140px;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.challenge-desc-card .ch-desc-title{font-size:16px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.challenge-desc-card .ch-desc-text{font-size:13px;color:var(--text-muted);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- Connection banner -->
+<div class="conn-banner" id="connBanner">Reconnecting...</div>
+
+<!-- Settings button & menu (screens 1-5) -->
+<button class="settings-btn" id="settingsBtn">&#8943;</button>
+<div class="settings-menu" id="settingsMenu">
+  <div class="sm-team">Team: <strong id="smTeamName"></strong></div>
+  <button class="sm-btn" id="smChangeName">Change name</button>
+  <button class="sm-btn" id="smChangeChallenge" style="display:none">Change challenge</button>
+</div>
+
+<!-- Back button (screens 1,3,4,5) -->
+<button class="nav-back" id="navBack">&larr; Back</button>
+
+<!-- Screen 0: JOIN -->
+<div class="screen active" id="s0">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div class="brand-name">Supernormal</div>
+  </div>
+  <div class="event-title">Ready to challenge your inner super?</div>
+  <div class="event-meta">Stockholm &middot; April 23</div>
+  <form id="joinForm">
+    <input type="text" id="teamInput" placeholder="Your team name" maxlength="40" autocomplete="off">
+    <button type="submit" class="btn" id="joinBtn">Join &rarr;</button>
+  </form>
+  <div class="waiting" id="waiting"><div class="dot pulse"></div><span>Waiting for host...</span></div>
+</div>
+
+<!-- Screen 1: PICK CHALLENGE -->
+<div class="screen" id="s1">
+  <div class="challenge-list-wrap" id="challengeListWrap">
+    <div class="header">
+      <h2>Pick your challenge</h2>
+      <p>Tap to learn more</p>
+    </div>
+    <div class="cards" id="cardsList"></div>
+  </div>
+  <div class="challenge-detail-wrap" id="challengeDetailWrap"></div>
+</div>
+
+<!-- Screen 2: TIMER + STEPS -->
+<div class="screen" id="s2">
+  <div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:6px" id="s2TeamLabel"></div>
+  <div class="card my-challenge" id="chBadge"><span class="emoji"></span><span class="title"></span></div>
+  <div class="challenge-desc-card" id="chDescCard" style="display:none">
+    <div class="ch-desc-title" id="chDescTitle"></div>
+    <div class="ch-desc-text" id="chDescText"></div>
+  </div>
+  <div class="stepper">
+    <div class="step"><div class="step-num">1</div><div class="step-text">Open app</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Start meeting</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Research</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Build</div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text">Present</div></div>
+  </div>
+  <div class="timer-section">
+    <div class="timer-display" id="timerDisplay">20:00</div>
+    <div class="timer-label">remaining</div>
+  </div>
+</div>
+
+<!-- Screen 3: TIME'S UP -->
+<div class="screen" id="s3">
+  <div class="big-emoji bounce" id="s3clock">&#9200;</div>
+  <h1>Time's up!</h1>
+  <h2 id="s3teamName" style="font-size:22px;font-weight:600;color:var(--text);margin-top:4px"></h2>
+  <p>Head back to the group</p>
+  <div class="card remind-card" id="s3remind"><span class="emoji"></span><span class="title"></span></div>
+</div>
+
+<!-- Screen 4: VOTE -->
+<div class="screen" id="s4">
+  <div class="header">
+    <h2>Vote for the best</h2>
+    <p>You can't vote for your own team</p>
+  </div>
+  <div class="teams-list" id="teamsList"></div>
+  <div class="voted-msg" id="votedMsg"></div>
+</div>
+
+<!-- Screen 5: RESULTS -->
+<div class="screen" id="s5">
+  <div class="trophy">&#127942;</div>
+  <div class="label">And the winner is...</div>
+  <div class="winner-name" id="winName">&mdash;</div>
+  <div class="winner-ch" id="winCh"></div>
+  <div class="card runner-card" id="runnerUp" style="display:none">
+    <div class="runner-label">Runner-up</div>
+    <div class="runner-name" id="runName"></div>
+  </div>
+  <div class="prize">&#127873; Supernormal Pro credits!</div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAaM9HPZO-H5OzxIAGiyacB-UKavYq4KR0",
+  authDomain: "supernormal-agency-event-apr29.firebaseapp.com",
+  databaseURL: "https://supernormal-agency-event-apr29-default-rtdb.firebaseio.com",
+  projectId: "supernormal-agency-event-apr29",
+  storageBucket: "supernormal-agency-event-apr29.firebasestorage.app",
+  messagingSenderId: "846632808989",
+  appId: "1:846632808989:web:954d7931060b2d68314cf4"
+};
+// Reset if ?reset in URL
+if (window.location.search.includes('reset')) {
+  localStorage.removeItem('sn_team');
+  localStorage.removeItem('sn_uid');
+  localStorage.removeItem('sn_challenge');
+  window.location.href = window.location.pathname;
+}
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database(), auth = firebase.auth();
+
+const challenges = [
+  { id: 0, title: "Shark Tank Moment", emoji: "\u{1F988}", tag: "STARTUP", short: "Create a startup from scratch. Pitch it like you\u2019re asking for $5 million.", desc: "Open the Supernormal desktop app and start a meeting with your team \u2014 brainstorm ideas, use Supernormal for quick research if you need it, and validate concepts during the call. When you\u2019re done, use the meeting context in Supernormal to build the brand name, landing page copy, pitch deck with visuals, and a killer one-liner. Stand up and pitch it to the room." },
+  { id: 1, title: "The Devil Wears Decks", emoji: "\u{1F460}", tag: "DESIGN", short: "Find the ugliest presentation on the internet. Make it beautiful.", desc: "Find the ugliest presentation you can online, or pick one from your own archive of shame. Open the Supernormal desktop app and record your team tearing it apart \u2014 use Supernormal for quick research on design trends if you need it. Then use the meeting context in Supernormal to rebuild it into something so polished the client thinks you hired a designer. Before/after reveal to the room." },
+  { id: 2, title: "The Apprentice: Agency Edition", emoji: "\u{1F527}", tag: "AUTOMATION", short: "Pick the workflow that makes you want to scream. Build something that fixes it.", desc: "Pick the one workflow that makes you want to scream. Open the Supernormal desktop app and record your team venting about it \u2014 use Supernormal for quick research on solutions if you need it. Then use the meeting context + Claude to build a real tool or automation that solves it. Client onboarding, brief intake, reporting \u2014 whatever haunts you. Demo it working live." },
+  { id: 3, title: "Ocean\u2019s Eleven: The Intel Job", emoji: "\u{1F575}\uFE0F", tag: "STRATEGY", short: "Pick a competitor you\u2019d love to outsmart. Build a plan to take them down.", desc: "Pick a competitor you\u2019d love to outsmart. Open the Supernormal desktop app and record your team breaking down their weaknesses \u2014 use Supernormal for quick research on their positioning and gaps if you need it. Then use the meeting context in Supernormal to build a full competitive takedown \u2014 market maps, SWOT, visuals, and a strategy to steal their clients. Present it like a $50K consulting pitch." },
+  { id: 4, title: "Mad Men: AI Edition", emoji: "\u{1F3A8}", tag: "CAMPAIGN", short: "Pick a brand that deserves better. Build them a full campaign.", desc: "Pick a brand you think deserves a better campaign. Open the Supernormal desktop app and record your team riffing on ideas \u2014 use Supernormal for quick research on the brand and audience if you need it. Then use the meeting context in Supernormal to generate the full campaign \u2014 social creatives, copy, images, taglines, media plan. Present it like you\u2019re in the pitch room fighting for the account." },
+  { id: 5, title: "Extreme Makeover: Brand Edition", emoji: "\u2728", tag: "BRANDING", short: "Pick a company with terrible branding. Give them the full glow-up.", desc: "Pick a company with branding so bad it hurts. Open the Supernormal desktop app and record your team roasting it \u2014 use Supernormal for quick research on brand trends if you need it. Then use the meeting context in Supernormal to deliver the full glow-up \u2014 new logo direction, brand voice, social templates, email signatures. Before/after reveal to the room." }
+];
+
+let uid = null, displayedScreen = -1, timerInterval = null, myVote = null;
+let userOverride = false;
+let lastPresenterScreen = 0;
+const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const $ = id => document.getElementById(id);
+
+// --- UI helpers for settings, back, banner ---
+function updateNavUI(screenNum) {
+  const joined = !!localStorage.getItem('sn_team');
+  // Settings button: visible on screens 1-5 when joined
+  $('settingsBtn').style.display = (joined && screenNum >= 1 && screenNum <= 5) ? 'flex' : 'none';
+  // Close settings menu on screen change
+  $('settingsMenu').classList.remove('open');
+  // Update team name in settings
+  $('smTeamName').textContent = localStorage.getItem('sn_team') || '';
+  // Change challenge button only on screens 1-2
+  $('smChangeChallenge').style.display = (screenNum === 1 || screenNum === 2) ? '' : 'none';
+  // Back button: screens 1,3,4,5 (NOT 0 or 2)
+  $('navBack').style.display = (joined && [1,3,4,5].includes(screenNum)) ? 'flex' : 'none';
+}
+
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+  const el = $('s' + n);
+  if (el) {
+    el.classList.add('active');
+  }
+  displayedScreen = n;
+  updateNavUI(n);
+}
+
+// --- Settings menu ---
+$('settingsBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  $('settingsMenu').classList.toggle('open');
+});
+document.addEventListener('click', () => $('settingsMenu').classList.remove('open'));
+$('settingsMenu').addEventListener('click', e => e.stopPropagation());
+
+$('smChangeName').addEventListener('click', () => {
+  $('settingsMenu').classList.remove('open');
+  // Go back to join screen, pre-fill name
+  $('teamInput').value = localStorage.getItem('sn_team') || '';
+  $('joinForm').style.display = '';
+  $('waiting').style.display = 'none';
+  $('joinBtn').disabled = false;
+  showScreen(0);
+});
+
+$('smChangeChallenge').addEventListener('click', () => {
+  $('settingsMenu').classList.remove('open');
+  selectedChallenge = null;
+  db.ref('/teams/' + uid + '/challenge').set(null);
+  localStorage.removeItem('sn_challenge');
+  initPick();
+  showScreen(1);
+});
+
+// --- Back button ---
+$('navBack').addEventListener('click', () => {
+  // Go back to where the presenter currently is, not previous sequential screen
+  userOverride = false;
+  const target = lastPresenterScreen;
+  if (target === 1) initPick();
+  if (target === 3) initTimesUp();
+  if (target === 4) initVote();
+  showScreen(target);
+});
+
+// --- Connection banner ---
+function showBanner(msg) { const b = $('connBanner'); b.textContent = msg; b.classList.add('visible'); }
+function hideBanner() { $('connBanner').classList.remove('visible'); }
+
+// Auth
+auth.signInAnonymously().then(r => {
+  uid = r.user.uid;
+  localStorage.setItem('sn_uid', uid);
+  const saved = localStorage.getItem('sn_team');
+  if (saved) {
+    $('joinForm').style.display = 'none';
+    $('waiting').style.display = 'flex';
+  }
+
+  // --- Feature 5: Reconnection banner ---
+  db.ref('.info/connected').on('value', snap => {
+    if (snap.val() === false) {
+      showBanner('Reconnecting...');
+    } else {
+      hideBanner();
+    }
+  });
+
+  // --- Feature 2: Screen sync with back freedom ---
+  db.ref('/currentScreen').on('value', snap => {
+    const s = snap.val();
+    if (s == null) return;
+    if (s !== lastPresenterScreen) {
+      // Presenter advanced to a new screen — pull user forward
+      lastPresenterScreen = s;
+      userOverride = false;
+      onScreenChange(s);
+    } else if (!userOverride && s !== displayedScreen) {
+      // Same presenter screen but user hasn't overridden — sync
+      onScreenChange(s);
+    }
+  });
+}).catch(e => console.error('Auth error', e));
+
+function onScreenChange(s) {
+  const joined = localStorage.getItem('sn_team');
+  if (s === 0) { showScreen(0); return; }
+  if (!joined) { showScreen(0); return; }
+  if (s === 1) initPick();
+  if (s === 2) initTimer();
+  if (s === 3) initTimesUp();
+  if (s === 4) initVote();
+  if (s === 5) initWinner();
+  showScreen(s);
+}
+
+// Screen 0: Join
+$('joinForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('teamInput').value.trim();
+  if (!name || !uid) return;
+  $('joinBtn').disabled = true;
+  db.ref('/teams/' + uid).set({ name, challenge: null, joinedAt: firebase.database.ServerValue.TIMESTAMP }).then(() => {
+    localStorage.setItem('sn_team', name);
+    localStorage.setItem('sn_uid', uid);
+    $('joinForm').style.display = 'none';
+    $('waiting').style.display = 'flex';
+    if (lastPresenterScreen > 0) onScreenChange(lastPresenterScreen);
+  }).catch(() => $('joinBtn').disabled = false);
+});
+
+// Screen 1: Pick
+let selectedChallenge = null;
+let pickInitialized = false;
+
+function initPick() {
+  const list = $('cardsList');
+  const listWrap = $('challengeListWrap');
+  const detailWrap = $('challengeDetailWrap');
+
+  if (!pickInitialized) {
+    pickInitialized = true;
+
+    challenges.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'card ch-card';
+      div.dataset.id = c.id;
+      div.innerHTML = `<div class="ch-top"><span class="ch-emoji ch-emoji-bg">${c.emoji}</span><div class="ch-content"><div class="ch-title">${esc(c.title)}</div><span class="pill ch-pill">${c.tag}</span></div><div class="ch-radio"></div></div><div class="ch-expand"><div class="ch-desc">${esc(c.short)}</div></div>`;
+
+      div.addEventListener('click', () => showChallengeDetail(c));
+      list.appendChild(div);
+    });
+  }
+
+  // Check localStorage first for saved challenge
+  const savedCh = localStorage.getItem('sn_challenge');
+
+  // Restore existing selection — show confirmed state
+  db.ref('/teams/' + uid + '/challenge').once('value', snap => {
+    const v = snap.val();
+    const chIdx = v != null ? v : (savedCh != null ? parseInt(savedCh) : null);
+    if (chIdx != null && challenges[chIdx]) {
+      selectedChallenge = chIdx;
+      localStorage.setItem('sn_challenge', chIdx);
+      // If Firebase didn't have it but localStorage did, push to Firebase
+      if (v == null && savedCh != null) db.ref('/teams/' + uid + '/challenge').set(chIdx);
+      showConfirmedState(challenges[chIdx]);
+      // --- Feature 3: Late joiner — if presenter is already past picking, jump ahead ---
+      if (lastPresenterScreen >= 2) {
+        jumpToLiveScreen();
+      }
+    } else {
+      // Reset to list view
+      showChallengeList();
+    }
+  });
+}
+
+// --- Feature 3: Late joiner jump ---
+function jumpToLiveScreen() {
+  userOverride = false;
+  if (lastPresenterScreen === 2) initTimer(true);
+  else if (lastPresenterScreen === 3) initTimesUp();
+  else if (lastPresenterScreen === 4) initVote();
+  else if (lastPresenterScreen === 5) initWinner();
+  if (lastPresenterScreen >= 2) showScreen(lastPresenterScreen);
+}
+
+function showChallengeDetail(c) {
+  const listWrap = $('challengeListWrap');
+  const detailWrap = $('challengeDetailWrap');
+
+  const themeColors = ['var(--ch-blue)','var(--ch-pink)','var(--ch-orange)','var(--ch-purple)','var(--ch-green)','var(--ch-yellow)'];
+  const barColor = themeColors[c.id] || 'var(--accent)';
+  detailWrap.innerHTML = `
+    <button class="detail-back" id="detailBack">\u2190 <span>Back</span></button>
+    <div class="detail-card">
+      <div class="detail-accent-bar" style="background:${barColor}"></div>
+      <div class="detail-card-inner">
+        <div class="detail-emoji">${c.emoji}</div>
+        <span class="pill detail-tag">${c.tag}</span>
+        <div class="detail-title">${esc(c.title)}</div>
+        <div class="detail-desc">${esc(c.desc)}</div>
+      </div>
+    </div>
+    <button class="btn detail-select-btn" id="detailSelectBtn">Select this challenge \u2192</button>
+  `;
+
+  // Animate list out, detail in
+  listWrap.classList.add('hidden');
+  detailWrap.classList.add('visible');
+
+  $('detailBack').addEventListener('click', () => showChallengeList());
+
+  $('detailSelectBtn').addEventListener('click', () => {
+    selectedChallenge = c.id;
+    localStorage.setItem('sn_challenge', c.id);
+    db.ref('/teams/' + uid + '/challenge').set(c.id);
+    showConfirmedState(c);
+    // --- Feature 3: Late joiner — after picking, jump if presenter is ahead ---
+    if (lastPresenterScreen >= 2) {
+      jumpToLiveScreen();
+    }
+  });
+}
+
+function showChallengeList() {
+  const listWrap = $('challengeListWrap');
+  const detailWrap = $('challengeDetailWrap');
+  listWrap.classList.remove('hidden');
+  detailWrap.classList.remove('visible');
+}
+
+function showConfirmedState(c) {
+  const listWrap = $('challengeListWrap');
+  const detailWrap = $('challengeDetailWrap');
+
+  detailWrap.innerHTML = `
+    <div class="confirmed-wrap">
+      <div class="confirmed-emoji" style="position:relative">\u2713<span class="confetti-dot-3"></span><span class="confetti-dot-4"></span></div>
+      <div class="confirmed-text">You picked ${esc(c.title)}</div>
+      <div class="confirmed-sub">${c.emoji} ${c.tag}</div>
+      <button class="btn btn-ghost btn-sm" id="changeBtn" style="margin-top:16px">Change challenge</button>
+    </div>
+  `;
+
+  listWrap.classList.add('hidden');
+  detailWrap.classList.add('visible');
+
+  $('changeBtn').addEventListener('click', () => {
+    selectedChallenge = null;
+    localStorage.removeItem('sn_challenge');
+    db.ref('/teams/' + uid + '/challenge').set(null);
+    showChallengeList();
+  });
+}
+
+// Screen 2: Timer
+function initTimer(lateJoin) {
+  // Show team name
+  const teamName = localStorage.getItem('sn_team') || '';
+  $('s2TeamLabel').textContent = teamName ? 'Team ' + teamName : '';
+
+  db.ref('/teams/' + uid + '/challenge').once('value', snap => {
+    const cid = snap.val();
+    const ch = challenges[cid] || challenges[0];
+    $('chBadge').querySelector('.emoji').textContent = ch.emoji;
+    $('chBadge').querySelector('.title').textContent = ch.title;
+    // Show full challenge description
+    $('chDescTitle').textContent = ch.emoji + ' ' + ch.title;
+    $('chDescText').textContent = ch.desc;
+    $('chDescCard').style.display = '';
+  });
+  // Remove any existing late-join message
+  const existingMsg = document.querySelector('#s2 .late-msg');
+  if (existingMsg) existingMsg.remove();
+
+  if (timerInterval) clearInterval(timerInterval);
+  db.ref('/timer').on('value', snap => {
+    const t = snap.val() || { totalSecs: 1200, running: false, startedAt: null };
+    if (timerInterval) clearInterval(timerInterval);
+    if (!t.running || !t.startedAt) { $('timerDisplay').textContent = fmt(t.totalSecs || 1200); return; }
+    // --- Feature 3: Late joiner message ---
+    if (lateJoin) {
+      lateJoin = false; // show only once
+      const elapsed = Math.floor((Date.now() - t.startedAt) / 1000);
+      const rem = Math.max(0, t.totalSecs - elapsed);
+      if (rem > 0) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'late-msg';
+        msgDiv.textContent = 'Challenge in progress \u2014 you have ' + fmt(rem) + ' remaining';
+        $('s2').insertBefore(msgDiv, $('s2').querySelector('.timer-section'));
+        setTimeout(() => { if (msgDiv.parentNode) msgDiv.remove(); }, 5000);
+      }
+    }
+    tick(t);
+    timerInterval = setInterval(() => tick(t), 1000);
+  });
+}
+function tick(t) {
+  const elapsed = Math.floor((Date.now() - t.startedAt) / 1000);
+  const rem = Math.max(0, t.totalSecs - elapsed);
+  const el = $('timerDisplay');
+  el.textContent = rem > 0 ? fmt(rem) : "Time's up!";
+  el.className = 'timer-display' + (rem <= 60 ? ' red' : rem <= 300 ? ' yellow' : '');
+}
+function fmt(s) { const m = Math.floor(s / 60), sec = s % 60; return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`; }
+
+// Alarm sound for time's up
+function playAlarm() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  for (let i = 0; i < 8; i++) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = i % 2 === 0 ? 880 : 660;
+    osc.type = 'sine';
+    const start = ctx.currentTime + i * 0.4;
+    gain.gain.setValueAtTime(0.25, start);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+    osc.start(start);
+    osc.stop(start + 0.35);
+  }
+}
+
+// Celebration sound for winner
+function playCheers() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc1 = ctx.createOscillator();
+  const gain1 = ctx.createGain();
+  osc1.connect(gain1);
+  gain1.connect(ctx.destination);
+  osc1.frequency.setValueAtTime(400, ctx.currentTime);
+  osc1.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.5);
+  gain1.gain.setValueAtTime(0.2, ctx.currentTime);
+  gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+  osc1.start(ctx.currentTime);
+  osc1.stop(ctx.currentTime + 1);
+  for (let i = 0; i < 5; i++) {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.connect(g);
+    g.connect(ctx.destination);
+    osc.frequency.value = 600 + Math.random() * 600;
+    g.gain.setValueAtTime(0.15, ctx.currentTime + 0.5 + i * 0.1);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7 + i * 0.1);
+    osc.start(ctx.currentTime + 0.5 + i * 0.1);
+    osc.stop(ctx.currentTime + 0.8 + i * 0.1);
+  }
+}
+
+// Screen 3: Time's up
+function initTimesUp() {
+  // Show team name
+  const teamName = localStorage.getItem('sn_team') || '';
+  $('s3teamName').textContent = teamName ? teamName : '';
+
+  // Clock ring animation
+  const clockEl = $('s3clock');
+  clockEl.classList.remove('clock-ring');
+  void clockEl.offsetWidth; // force reflow
+  clockEl.classList.add('clock-ring');
+
+  // Play alarm sound
+  playAlarm();
+
+  db.ref('/teams/' + uid + '/challenge').once('value', snap => {
+    const cid = snap.val();
+    const ch = challenges[cid] || challenges[0];
+    $('s3remind').querySelector('.emoji').textContent = ch.emoji;
+    $('s3remind').querySelector('.title').textContent = ch.title;
+  });
+}
+
+// Screen 4: Vote
+function initVote() {
+  db.ref('/votedUsers/' + uid).once('value', snap => { myVote = snap.val() || null; renderTeams(); });
+  db.ref('/teams').on('value', () => renderTeams());
+  db.ref('/votes').on('value', () => renderTeams());
+}
+function renderTeams() {
+  Promise.all([db.ref('/teams').once('value'), db.ref('/votes').once('value')]).then(([tSnap, vSnap]) => {
+    const teams = tSnap.val() || {}, votes = vSnap.val() || {};
+    const list = $('teamsList');
+    list.innerHTML = '';
+
+    Object.entries(teams).forEach(([id, t]) => {
+      const ch = challenges[t.challenge] || { emoji: '', title: '' };
+      const isSelf = id === uid;
+      const vc = votes[id] || 0;
+      const votedThis = myVote === id;
+
+      const row = document.createElement('div');
+      row.className = 'card team-row';
+
+      let actionHTML;
+      if (isSelf) {
+        actionHTML = '<span class="you-label">Your team</span>';
+      } else if (votedThis) {
+        actionHTML = '<span class="voted-check"><span>\u2713</span> Voted</span>';
+      } else {
+        actionHTML = `<button class="btn btn-vote vbtn" data-uid="${id}"${myVote ? ' disabled' : ''}>Vote</button>`;
+      }
+
+      row.innerHTML = `<div class="info"><div class="tname">${esc(t.name)}</div><div class="tchallenge">${ch.emoji} ${esc(ch.title)}</div></div>${vc > 0 ? `<span class="votes-count">${vc} vote${vc !== 1 ? 's' : ''}</span>` : ''}${actionHTML}`;
+
+      const btn = row.querySelector('.vbtn');
+      if (btn && !myVote) btn.addEventListener('click', e => { e.stopPropagation(); castVote(id); });
+      list.appendChild(row);
+    });
+
+    if (myVote) {
+      $('votedMsg').style.display = 'block';
+      const votedTeam = teams[myVote];
+      $('votedMsg').textContent = '\u2713 You voted for ' + esc((votedTeam || {}).name || 'a team');
+    }
+  });
+}
+function castVote(targetUid) {
+  if (myVote) return;
+  // Animate the button
+  const btn = document.querySelector(`.vbtn[data-uid="${targetUid}"]`);
+  if (btn) { btn.classList.add('voted-anim'); btn.textContent = '\u2713'; }
+  myVote = targetUid;
+  setTimeout(() => {
+    db.ref('/votedUsers/' + uid).set(targetUid);
+    db.ref('/votes/' + targetUid).transaction(v => (v || 0) + 1);
+    renderTeams();
+  }, 350);
+}
+
+// Screen 5: Winner
+let cheersPlayed = false;
+function initWinner() {
+  cheersPlayed = false;
+  db.ref('/results').on('value', snap => {
+    const r = snap.val();
+    if (!r || !r.winner) { $('winName').textContent = '\u2014'; return; }
+    if (!cheersPlayed) { cheersPlayed = true; playCheers(); }
+    $('winName').textContent = esc(r.winner.name);
+    const wch = challenges[r.winner.challenge] || { emoji: '', title: '' };
+    $('winCh').textContent = wch.emoji + ' ' + wch.title;
+    if (r.runnerUp) {
+      $('runnerUp').style.display = '';
+      const rch = challenges[r.runnerUp.challenge] || { emoji: '', title: '' };
+      $('runName').textContent = esc(r.runnerUp.name) + ' \u2014 ' + rch.emoji + ' ' + rch.title;
+    }
+  });
+}
+</script>
+</body>
+</html>
