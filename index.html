@@ -228,16 +228,23 @@ body::after {
 }
 
 .welcome-eyebrow {
-  font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-light);
-  padding: 6px 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(26,143,255,0.15);
-  margin-bottom: 12px;
+  font-size: 14px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, #1a8fff, #4da6ff, #1a8fff);
+  background-size: 200% 200%;
+  animation: badgeShine 3s ease infinite;
+  padding: 8px 22px;
+  border-radius: 24px;
+  margin-bottom: 14px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(26,143,255,0.3);
+}
+@keyframes badgeShine {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .welcome-headline {
   font-size: clamp(32px, 4vw, 52px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
@@ -945,6 +952,21 @@ body::after {
 }
   50% { transform: scale(1.03); }
 }
+
+.office-scene {
+  position: absolute;
+  bottom: 48px;
+  left: 0;
+  right: 0;
+  height: 200px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+.office-svg {
+  width: 100%;
+  height: 100%;
+}
 </style>
 </head>
 <body>
@@ -972,7 +994,48 @@ body::after {
 
 <!-- SCREEN 0: WELCOME -->
 <div class="screen active" id="screen0">
-  <div class="blob-container" id="blobContainer"></div>
+  <div class="office-scene">
+  <svg class="office-svg" viewBox="0 0 1200 200" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+    <!-- Floor line -->
+    <line x1="0" y1="160" x2="1200" y2="160" stroke="#c0c0c0" stroke-width="1.5" stroke-dasharray="8 4"/>
+    <!-- Left desk -->
+    <rect x="60" y="120" width="120" height="6" rx="3" stroke="#b0b0b0" stroke-width="1.5" fill="none"/>
+    <line x1="80" y1="126" x2="80" y2="158" stroke="#b0b0b0" stroke-width="1.5"/>
+    <line x1="160" y1="126" x2="160" y2="158" stroke="#b0b0b0" stroke-width="1.5"/>
+    <!-- Coffee cup on left desk -->
+    <rect x="100" y="108" width="16" height="14" rx="3" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <path d="M116 112 Q122 112 122 118 Q122 122 116 122" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <path d="M104 106 Q106 100 108 106" stroke="#b0b0b0" stroke-width="1" fill="none"/>
+    <!-- Right desk -->
+    <rect x="1020" y="120" width="120" height="6" rx="3" stroke="#b0b0b0" stroke-width="1.5" fill="none"/>
+    <line x1="1040" y1="126" x2="1040" y2="158" stroke="#b0b0b0" stroke-width="1.5"/>
+    <line x1="1120" y1="126" x2="1120" y2="158" stroke="#b0b0b0" stroke-width="1.5"/>
+    <!-- Laptop on right desk -->
+    <rect x="1050" y="105" width="30" height="20" rx="2" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <rect x="1045" y="125" width="40" height="3" rx="1.5" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <!-- Plant left -->
+    <ellipse cx="20" cy="145" rx="12" ry="16" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <line x1="20" y1="161" x2="20" y2="158" stroke="#b0b0b0" stroke-width="1.5"/>
+    <rect x="14" y="149" width="12" height="12" rx="2" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <path d="M16 149 Q20 138 24 149" stroke="#b0b0b0" stroke-width="1" fill="none"/>
+    <path d="M12 145 Q20 130 28 145" stroke="#b0b0b0" stroke-width="1" fill="none"/>
+    <!-- Plant right -->
+    <rect x="1174" y="149" width="12" height="12" rx="2" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <path d="M1176 149 Q1180 138 1184 149" stroke="#b0b0b0" stroke-width="1" fill="none"/>
+    <path d="M1172 145 Q1180 130 1188 145" stroke="#b0b0b0" stroke-width="1" fill="none"/>
+    <!-- Whiteboard center-left -->
+    <rect x="250" y="90" width="60" height="40" rx="3" stroke="#b0b0b0" stroke-width="1.2" fill="none"/>
+    <line x1="280" y1="130" x2="280" y2="158" stroke="#b0b0b0" stroke-width="1.5"/>
+    <line x1="260" y1="100" x2="295" y2="100" stroke="#b0b0b0" stroke-width="0.8"/>
+    <line x1="260" y1="108" x2="290" y2="108" stroke="#b0b0b0" stroke-width="0.8"/>
+    <line x1="260" y1="116" x2="285" y2="116" stroke="#b0b0b0" stroke-width="0.8"/>
+    <!-- Supernormal sparkle stars (blue) -->
+    <path d="M200 85 L202 90 L207 92 L202 94 L200 99 L198 94 L193 92 L198 90 Z" fill="#1a8fff" opacity="0.3"/>
+    <path d="M950 95 L952 100 L957 102 L952 104 L950 109 L948 104 L943 102 L948 100 Z" fill="#1a8fff" opacity="0.25"/>
+    <path d="M500 80 L501.5 84 L505.5 85.5 L501.5 87 L500 91 L498.5 87 L494.5 85.5 L498.5 84 Z" fill="#1a8fff" opacity="0.2"/>
+  </svg>
+</div>
+<div class="blob-container" id="blobContainer"></div>
   <div class="welcome-floats">
     <span class="float-emoji" style="left:3%;top:12%;font-size:36px;animation-duration:12s;">🦈</span>
     <span class="float-emoji" style="left:88%;top:18%;font-size:32px;animation-duration:15s;animation-delay:-3s;">👠</span>
@@ -983,7 +1046,7 @@ body::after {
   </div>
   <div class="welcome-wrap">
     
-    <div class="welcome-eyebrow stagger-2"><span style="font-size:16px;">⚡</span> Agency Thursdays</div>
+    <div class="welcome-eyebrow stagger-2">🎯 Agency Thursdays</div>
     <div class="welcome-brand-text stagger-2">Supernormal</div>
     <div class="welcome-headline stagger-3">Ready to challenge<br>your inner super?</div>
     
