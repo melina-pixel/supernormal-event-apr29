@@ -839,52 +839,109 @@ body::after {
 }
 
 
-/* ── BLOB MASCOTS ── */
+/* ── BLOB MASCOTS / MEETING TABLE ── */
 .blob-container {
   position: absolute;
-  inset: 0;
-  overflow: hidden;
+  bottom: 52px; /* above host bar */
+  left: 0;
+  right: 0;
+  height: 200px;
   pointer-events: none;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* The table */
+.meeting-table {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-width: 800px;
+  height: 8px;
+  background: linear-gradient(180deg, #b8cfe0 0%, #a0b8cc 100%);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   z-index: 1;
 }
-.blob-team {
+
+/* Table legs */
+.meeting-table::before, .meeting-table::after {
+  content: '';
   position: absolute;
+  bottom: -20px;
+  width: 6px;
+  height: 20px;
+  background: #a0b8cc;
+  border-radius: 0 0 3px 3px;
+}
+.meeting-table::before { left: 15%; }
+.meeting-table::after { right: 15%; }
+
+/* Seat positions - blobs sit above the table */
+.blob-seat {
+  position: absolute;
+  bottom: 38px; /* just above the table */
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: blobPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  z-index: 2;
   opacity: 0;
+  transform: translateY(-40px);
+  animation: none; /* set dynamically */
 }
-.blob-team img {
-  width: 100px;
-  height: 100px;
+
+.blob-seat.occupied {
+  animation: dropIntoSeat 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.blob-seat img {
+  width: 70px;
+  height: 70px;
   object-fit: contain;
 }
-.blob-name {
-  font-size: 12px;
+
+.blob-seat .blob-name {
+  font-size: 10px;
   font-weight: 600;
   color: var(--text);
   background: #fff;
-  padding: 3px 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  margin-bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  margin-bottom: 2px;
   white-space: nowrap;
 }
-@keyframes blobPopIn {
-  0% { opacity: 0; transform: scale(0) translateY(20px); }
-  60% { opacity: 1; transform: scale(1.1) translateY(-5px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+
+/* Animations */
+@keyframes dropIntoSeat {
+  0% { opacity: 0; transform: translateY(-60px) scale(0.5); }
+  50% { opacity: 1; transform: translateY(5px) scale(1.05); }
+  70% { transform: translateY(-3px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-@keyframes blobFloat {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-8px) rotate(2deg); }
+
+/* Idle animations - applied AFTER sitting */
+@keyframes blobIdle1 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-3px) rotate(-2deg); }
+  60% { transform: translateY(-1px) rotate(1deg); }
 }
-@keyframes blobWiggle {
-  0%, 100% { transform: rotate(-3deg); }
-  25% { transform: rotate(3deg); }
-  50% { transform: rotate(-2deg); }
-  75% { transform: rotate(2deg); }
+
+@keyframes blobIdle2 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(2deg); }
+  75% { transform: translateY(-4px) rotate(-1deg); }
+}
+
+@keyframes blobIdle3 {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
 }
 </style>
 </head>
@@ -913,7 +970,9 @@ body::after {
 
 <!-- SCREEN 0: WELCOME -->
 <div class="screen active" id="screen0">
-  <div class="blob-container" id="blobContainer"></div>
+  <div class="blob-container" id="blobContainer">
+    <div class="meeting-table"></div>
+  </div>
   <div class="welcome-floats">
     <span class="float-emoji" style="left:3%;top:12%;font-size:56px;animation-duration:12s;">🦈</span>
     <span class="float-emoji" style="left:88%;top:18%;font-size:44px;animation-duration:15s;animation-delay:-3s;">👠</span>
@@ -1240,40 +1299,45 @@ const blobImages = [
 ];
 
 const renderedBlobs = new Set();
-const blobAnimations = ['blobFloat', 'blobWiggle'];
+
+const seatPositions = [
+  '15%', '25%', '35%', '45%', '55%', '65%', '75%', '85%',
+  '20%', '30%', '40%', '50%', '60%', '70%', '80%'
+]; // supports up to 15 teams
+
+const idleAnims = ['blobIdle1', 'blobIdle2', 'blobIdle3'];
 
 function addBlobForTeam(name, index) {
   const container = document.getElementById('blobContainer');
   if (!container) return;
-  
-  const blob = document.createElement('div');
-  blob.className = 'blob-team';
-  
-  const positions = [
-    { left: '5%', bottom: '10%' },
-    { right: '5%', bottom: '10%' },
-    { left: '8%', top: '15%' },
-    { right: '8%', top: '15%' },
-    { left: '15%', bottom: '25%' },
-    { right: '15%', bottom: '25%' },
-    { left: '3%', top: '40%' },
-    { right: '3%', top: '40%' },
-    { left: '20%', top: '12%' },
-    { right: '20%', top: '12%' },
-  ];
-  const pos = positions[index % positions.length];
-  Object.assign(blob.style, pos);
-  
+
+  const seat = document.createElement('div');
+  seat.className = 'blob-seat';
+  seat.style.left = seatPositions[index % seatPositions.length];
+  seat.style.transform = 'translateX(-50%)'; // center on position
+
   const blobIdx = index % 6;
-  const anim = blobAnimations[index % 2];
-  const duration = 3 + Math.random() * 2;
-  
-  blob.innerHTML = 
+  const idleAnim = idleAnims[index % 3];
+  const idleDuration = (2.5 + Math.random() * 2).toFixed(1);
+  const idleDelay = (Math.random() * 2).toFixed(1);
+
+  seat.innerHTML =
     '<div class="blob-name">' + name.replace(/</g, '&lt;') + '</div>' +
-    '<img src="' + blobImages[blobIdx] + '" alt="" style="animation: ' + anim + ' ' + duration + 's ease-in-out infinite; animation-delay: ' + (index * 0.3) + 's;">';
-  
-  blob.style.animationDelay = (index * 0.15) + 's';
-  container.appendChild(blob);
+    '<img src="' + blobImages[blobIdx] + '" alt="" class="blob-img">';
+
+  container.appendChild(seat);
+
+  // Trigger the drop animation
+  requestAnimationFrame(() => {
+    seat.classList.add('occupied');
+    // After drop animation, start idle animation
+    setTimeout(() => {
+      const img = seat.querySelector('.blob-img');
+      if (img) {
+        img.style.animation = idleAnim + ' ' + idleDuration + 's ease-in-out ' + idleDelay + 's infinite';
+      }
+    }, 700); // wait for drop animation to finish
+  });
 }
 
 // Track previous challenge counts for bump detection
@@ -1661,7 +1725,8 @@ function resetAll() {
   const cc = document.getElementById('confettiCanvas');
   cc.getContext('2d').clearRect(0, 0, cc.width, cc.height);
 
-  document.getElementById('blobContainer').innerHTML = '';
+  const bc = document.getElementById('blobContainer');
+  bc.innerHTML = '<div class="meeting-table"></div>';
   renderedBlobs.clear();
   goTo(0);
 }
