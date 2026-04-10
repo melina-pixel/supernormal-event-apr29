@@ -500,17 +500,34 @@ function hideBanner() { $('connBanner').classList.remove('visible'); }
 auth.signInAnonymously().then(r => {
   uid = r.user.uid;
     // Watch for challenge changes from presenter (drag-drop)
+    var lastKnownChallenge = localStorage.getItem('sn_challenge');
     db.ref('/teams/' + uid + '/challenge').on('value', function(snap) {
       var newCh = snap.val();
-      if (newCh !== null && newCh !== undefined) {
-        localStorage.setItem('sn_challenge', String(newCh));
+      if (newCh === null || newCh === undefined) return;
+      var newChStr = String(newCh);
+      // Only react if it actually changed
+      if (newChStr !== lastKnownChallenge) {
+        lastKnownChallenge = newChStr;
+        localStorage.setItem('sn_challenge', newChStr);
         var ch = challenges[newCh] || challenges[0];
+        // Update timer screen badge
         var badge = document.getElementById('chBadge');
         if (badge) {
           var e2 = badge.querySelector('.emoji'); if (e2) e2.textContent = ch.emoji;
           var t2 = badge.querySelector('.title'); if (t2) t2.textContent = ch.title;
         }
         var d2 = document.getElementById('chDescText'); if (d2) d2.textContent = ch.desc;
+        // Update confirmed state on pick screen
+        var confirmDiv = document.getElementById('confirmState');
+        if (confirmDiv) {
+          var nameEl = confirmDiv.querySelector('.confirm-ch');
+          if (nameEl) nameEl.textContent = ch.emoji + ' ' + ch.title;
+        }
+        // Update the selected card highlight on pick screen
+        document.querySelectorAll('.challenge-row').forEach(function(row) {
+          row.classList.remove('selected');
+          if (parseInt(row.dataset.id) === newCh) row.classList.add('selected');
+        });
       }
     });
   localStorage.setItem('sn_uid', uid);
