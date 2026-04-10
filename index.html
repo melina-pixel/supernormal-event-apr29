@@ -373,10 +373,7 @@ body::after {
   gap: 6px;
   flex-wrap: wrap;
 }
-.challenge-card .card-count.has-teams {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
+.challenge-card .card-count.has-teams { }
 .challenge-card .card-count .dot {
   display: none;
 }
@@ -394,9 +391,10 @@ body::after {
 .challenge-card .card-count .team-name-pill {
   display: inline-block;
   font-size: 11px;
+  margin-right: 6px;
   font-weight: 600;
   color: var(--accent);
-  background: var(--accent-light) !important;
+  
   border: 1px solid rgba(26,143,255,0.12);
   padding: 2px 10px;
   border-radius: 20px;
@@ -984,12 +982,12 @@ body::after {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #ccc;
+  
   margin-right: 4px;
   vertical-align: middle;
 }
 .card-count .live-indicator.active {
-  background: #4ade80;
+  
   box-shadow: 0 0 6px rgba(74,222,128,0.4);
   animation: livePulse 2s ease-in-out infinite;
 }
