@@ -79,10 +79,9 @@ body::after {
 
 /* ── FULLSCREEN MODE ── */
 .is-fullscreen .nav-top { display: none; }
-.is-fullscreen .host-bar { display: none; }
 .is-fullscreen .nav-arrow { display: none; }
 .is-fullscreen .screen {
-  padding: 0 16px;
+  padding: 0 16px 52px;
 }
 
 /* ── NAV TOP ── */
@@ -2068,7 +2067,11 @@ function closeChallengeInfo() {
   document.getElementById('challengeBackdrop').classList.remove('open');
   document.getElementById('challengeModal').classList.remove('open');
 }
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeChallengeInfo(); });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeChallengeInfo();
+  if (e.key === 'ArrowRight') goTo(Math.min(currentScreen + 1, 6));
+  if (e.key === 'ArrowLeft') goTo(Math.max(currentScreen - 1, 0));
+});
 </script>
 
 <div class="modal-backdrop" id="challengeBackdrop" onclick="closeChallengeInfo()"></div>
