@@ -104,9 +104,6 @@ html:fullscreen, html:-webkit-full-screen {
 .runner-up-name { font-size: 22px !important; }
 
 /* Bigger comeback */
-.comeback-title { font-size: clamp(40px, 5vw, 56px) !important; }
-.comeback-sub { font-size: 20px !important; }
-.comeback-accent { font-size: 18px !important; }
 
 /* Bigger section titles */
 .section-title { font-size: clamp(28px, 3.5vw, 40px) !important; }
@@ -634,15 +631,23 @@ html:fullscreen, html:-webkit-full-screen {
   text-align: center; padding: 0 40px;
 }
 .comeback-emoji {
-  font-size: 48px; margin-bottom: 10px;
-  animation: bounce 2s ease-in-out infinite;
+  font-size: 80px; margin-bottom: 16px;
+  animation: alarmRing 0.5s ease-in-out infinite;
+}
+@keyframes alarmRing {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(15deg); }
+  30% { transform: rotate(-15deg); }
+  45% { transform: rotate(10deg); }
+  60% { transform: rotate(-10deg); }
+  75% { transform: rotate(5deg); }
 }
 .comeback-title {
-  font-size: clamp(40px, 5vw, 64px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;
-  margin-bottom: 8px;
+  font-size: clamp(64px, 7vw, 96px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+  margin-bottom: 12px;
 }
-.comeback-sub { font-size: 16px; color: var(--text-muted); margin-bottom: 4px; }
-.comeback-accent { font-size: 14px; color: var(--accent); font-weight: 500; margin-bottom: 16px; }
+.comeback-sub { font-size: 24px; color: var(--text-muted); margin-bottom: 8px; }
+.comeback-accent { font-size: 20px; color: var(--accent); font-weight: 600; margin-bottom: 20px; }
 .comeback-teams {
   display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
   max-width: 700px;
@@ -1320,7 +1325,7 @@ html:fullscreen, html:-webkit-full-screen {
 <!-- SCREEN 3: COME BACK -->
 <div class="screen" id="screen3">
   <div class="comeback-wrap">
-    <div class="comeback-emoji stagger-1">&#9200;</div>
+    <div class="comeback-emoji stagger-1">&#128276;</div>
     <div class="comeback-title stagger-2">Time&#8217;s Up!</div>
     <div class="comeback-sub stagger-3">Head back to the group</div>
     <div class="comeback-accent stagger-4">Presentations start now</div>
