@@ -1932,9 +1932,18 @@ function revealWinner() {
 
       db.ref('results').set({ winner, runnerUp: runnerUpTeam });
 
-      setTimeout(() => { document.getElementById('winnerBlobs').classList.add('show');
-  document.getElementById('winnerPre').classList.add('show'); }, 200);
-      setTimeout(() => { document.getElementById('winnerTrophy').classList.add('show'); }, 1000);
+      // Dramatic reveal sequence
+      setTimeout(() => { document.getElementById('winnerBlobs').classList.add('show'); }, 200);
+      setTimeout(() => {
+        document.getElementById('winnerPre').textContent = '3...';
+        document.getElementById('winnerPre').classList.add('show');
+      }, 1000);
+      setTimeout(() => { document.getElementById('winnerPre').textContent = '2...'; }, 2000);
+      setTimeout(() => { document.getElementById('winnerPre').textContent = '1...'; }, 3000);
+      setTimeout(() => {
+        document.getElementById('winnerPre').textContent = 'And the winner is...';
+        document.getElementById('winnerTrophy').classList.add('show');
+      }, 3800);
       // 3-second suspense before revealing winner name
       setTimeout(() => {
         if (winner) {
@@ -2033,10 +2042,11 @@ function resetAll() {
   fmtTime();
   document.getElementById('timerToggle').textContent = 'Start';
 
-  ['winnerPre','winnerTrophy','winnerName','winnerChallenge','runnerUp','winnerPrize'].forEach(id => {
+  ['winnerBlobs','winnerPre','winnerTrophy','winnerName','winnerChallenge','runnerUp','winnerPrize'].forEach(id => {
     document.getElementById(id).classList.remove('show');
   });
   document.getElementById('winnerName').textContent = '';
+  document.getElementById('winnerPre').textContent = 'And the winner is...';
   document.getElementById('runnerUpName').textContent = '';
   document.getElementById('revealBtn').style.display = '';
 
