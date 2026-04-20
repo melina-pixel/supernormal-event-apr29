@@ -223,8 +223,8 @@ body::after {
 .welcome-wrap {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; flex: 1;
-  max-width: 900px; width: 100%; padding: 0 40px 160px;
-  text-align: center;
+  max-width: 900px; width: 100%; padding: 0 40px 60px;
+  text-align: center; gap: 8px;
 }
 
 .welcome-eyebrow {
@@ -1106,6 +1106,9 @@ body::after {
   <div class="nav-dots" id="navDots"></div>
   <div class="nav-right">
     <span id="navTimer">20:00</span>
+    <button onclick="toggleFullscreen()" style="background:none;border:1px solid var(--border);border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-subtle);transition:color 0.2s;" title="Fullscreen">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </div>
 </div>
 
@@ -1948,6 +1951,14 @@ function fireConfetti() {
 }
 
 // RESET ALL
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
 function resetAll() {
   if (!confirm('Reset everything?')) return;
   db.ref('teams').remove();
