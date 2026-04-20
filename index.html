@@ -77,11 +77,17 @@ body::after {
   z-index: 2;
 }
 
-/* ── PRESENTATION MODE (toggle via button, then F11 for true fullscreen) ── */
+/* ── PRESENTATION MODE ── */
 .is-fullscreen .nav-top { display: none; }
 .is-fullscreen .nav-arrow { display: none; }
 .is-fullscreen .screen {
   padding: 8px 16px 52px;
+}
+/* Fill black bars in fullscreen with matching gradient */
+html:fullscreen, html:-webkit-full-screen {
+  background: linear-gradient(135deg, #e8f0fa 0%, #d4e4f8 25%, #c8ddf4 50%, #d8eafc 75%, #e8f0fa 100%);
+  background-size: 400% 400%;
+  animation: bgShift 15s ease infinite;
 }
 
 
@@ -1931,6 +1937,17 @@ function revealWinner() {
       const runnerUpTeam = sorted[1] || null;
 
       db.ref('results').set({ winner, runnerUp: runnerUpTeam });
+
+      // Build team blobs around the reveal
+      const blobEl = document.getElementById('winnerBlobs');
+      blobEl.innerHTML = '';
+      sorted.forEach(function(t, i) {
+        var bIdx = teamBlobMap[t.uid] !== undefined ? teamBlobMap[t.uid] : (i % blobImages.length);
+        var div = document.createElement('div');
+        div.className = 'wb';
+        div.innerHTML = '<img src="' + blobImages[bIdx] + '" alt=""><div style="font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;margin-top:4px;">' + t.name + '</div>';
+        blobEl.appendChild(div);
+      });
 
       // Dramatic reveal sequence
       setTimeout(() => { document.getElementById('winnerBlobs').classList.add('show'); }, 200);
