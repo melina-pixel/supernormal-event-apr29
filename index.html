@@ -77,11 +77,11 @@ body::after {
   z-index: 2;
 }
 
-/* ── FULLSCREEN MODE ── */
+/* ── PRESENTATION MODE (toggle via button, then F11 for true fullscreen) ── */
 .is-fullscreen .nav-top { display: none; }
 .is-fullscreen .nav-arrow { display: none; }
 .is-fullscreen .screen {
-  padding: 0 16px 52px;
+  padding: 8px 16px 52px;
 }
 
 
@@ -2009,19 +2009,8 @@ function fireConfetti() {
 
 // RESET ALL
 function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().then(() => {
-      document.body.classList.add('is-fullscreen');
-    }).catch(() => {});
-  } else {
-    document.exitFullscreen().then(() => {
-      document.body.classList.remove('is-fullscreen');
-    }).catch(() => {});
-  }
+  document.body.classList.toggle('is-fullscreen');
 }
-document.addEventListener('fullscreenchange', () => {
-  if (!document.fullscreenElement) document.body.classList.remove('is-fullscreen');
-});
 
 function resetAll() {
   if (!confirm('Reset everything?')) return;
