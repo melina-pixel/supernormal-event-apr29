@@ -1294,18 +1294,23 @@ html:fullscreen, html:-webkit-full-screen {
 <div class="screen" id="screen2">
   <div class="timer-wrap">
     <div class="timer-chips" id="timerChips"></div>
-    <select class="timer-select" id="timerSelect" onchange="setDuration(parseInt(this.value))">
-      <option value="300">5 minutes</option>
-      <option value="600">10 minutes</option>
-      <option value="900">15 minutes</option>
-      <option value="1200" selected>20 minutes</option>
-      <option value="1500">25 minutes</option>
-      <option value="1800">30 minutes</option>
-      <option value="2100">35 minutes</option>
-      <option value="2400">40 minutes</option>
-      <option value="2700">45 minutes</option>
-      <option value="3600">60 minutes</option>
-    </select>
+    <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;">
+      <select class="timer-select" id="timerSelect" onchange="setDuration(parseInt(this.value))">
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+        <option value="900">15 minutes</option>
+        <option value="1200" selected>20 minutes</option>
+        <option value="1500">25 minutes</option>
+        <option value="1800">30 minutes</option>
+        <option value="2100">35 minutes</option>
+        <option value="2400">40 minutes</option>
+        <option value="2700">45 minutes</option>
+        <option value="3600">60 minutes</option>
+      </select>
+      <span style="color:var(--text-subtle);font-size:13px;">or</span>
+      <input type="text" id="customTimeInput" placeholder="mm:ss" style="width:80px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-size:15px;font-family:inherit;text-align:center;" onkeydown="if(event.key==='Enter')applyCustomTime()">
+      <button class="btn-ghost" onclick="applyCustomTime()" style="padding:8px 14px;font-size:13px;min-height:auto;width:auto;">Set</button>
+    </div>
     <div class="timer-label">Time remaining</div>
     <div class="timer-display" id="timerDisplay">20:00</div>
     <div class="timer-steps">
@@ -1510,6 +1515,21 @@ function setDuration(newSecs) {
   fmtTime();
   document.getElementById('timerSelect').value = newSecs;
   db.ref('timer').set({ totalSecs: newSecs, running: false, startedAt: null });
+}
+
+function applyCustomTime() {
+  var val = document.getElementById('customTimeInput').value.trim();
+  var parts = val.split(':');
+  var totalSecs = 0;
+  if (parts.length === 2) {
+    totalSecs = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  } else if (parts.length === 1) {
+    totalSecs = parseInt(parts[0]) * 60;
+  }
+  if (totalSecs > 0 && totalSecs <= 7200) {
+    setDuration(totalSecs);
+    document.getElementById('customTimeInput').value = '';
+  }
 }
 
 function toggleTimer() {
