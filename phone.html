@@ -669,6 +669,7 @@ function showChallengeDetail(c) {
   // Animate list out, detail in
   listWrap.classList.add('hidden');
   detailWrap.classList.add('visible');
+  $('navBack').style.display = 'none';
 
   $('detailBack').addEventListener('click', () => showChallengeList());
 
@@ -689,6 +690,7 @@ function showChallengeList() {
   const detailWrap = $('challengeDetailWrap');
   listWrap.classList.remove('hidden');
   detailWrap.classList.remove('visible');
+  $('navBack').style.display = 'flex';
 }
 
 function showConfirmedState(c) {

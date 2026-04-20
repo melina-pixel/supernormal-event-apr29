@@ -891,7 +891,7 @@ body::after {
   bottom: 48px;
   left: 0;
   right: 0;
-  height: 160px;
+  height: 100px;
   pointer-events: none;
   z-index: 2;
   display: flex;
@@ -913,8 +913,8 @@ body::after {
   transform: translateY(0) scale(1);
 }
 .blob-char img {
-  width: 90px;
-  height: 90px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
 }
 .blob-label {
@@ -1161,9 +1161,6 @@ body::after {
   <div class="nav-dots" id="navDots"></div>
   <div class="nav-right">
     <span id="navTimer">20:00</span>
-    <button onclick="toggleFullscreen()" style="background:none;border:1px solid var(--border);border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-subtle);transition:color 0.2s;" title="Fullscreen">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
   </div>
 </div>
 
@@ -1365,6 +1362,7 @@ body::after {
   <button class="host-btn" onclick="goTo(5)">Vote</button>
   <button class="host-btn" onclick="goTo(6)">Winner</button>
   <button class="host-btn reset" onclick="resetAll()">Reset</button>
+  <button class="host-btn" onclick="toggleFullscreen()" style="margin-left:8px;">&#9974;</button>
 </div>
 
 <!-- Firebase SDKs -->
@@ -2009,8 +2007,17 @@ function fireConfetti() {
 
 // RESET ALL
 function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
   document.body.classList.toggle('is-fullscreen');
 }
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) document.body.classList.remove('is-fullscreen');
+  else document.body.classList.add('is-fullscreen');
+});
 
 function resetAll() {
   if (!confirm('Reset everything?')) return;
