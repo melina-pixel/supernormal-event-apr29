@@ -93,20 +93,49 @@ html:fullscreen, html:-webkit-full-screen {
 
 /* ── TV SCALE-UP ── */
 
-/* Bigger QR code for TV */
-.welcome-qr-box img { width: 180px !important; height: 180px !important; }
+/* ── TV READABILITY — everything bigger for standing distance ── */
 
-/* Bigger winner elements */
-.winner-trophy { font-size: 80px !important; }
-.winner-name { font-size: clamp(42px, 5vw, 64px) !important; }
-.winner-pre { font-size: 24px !important; }
-.winner-prize { font-size: 18px !important; }
-.runner-up-name { font-size: 22px !important; }
+/* Welcome screen */
+.welcome-brand-text { font-size: clamp(48px, 6vw, 72px) !important; }
+.welcome-headline { font-size: clamp(48px, 6vw, 72px) !important; }
+.welcome-eyebrow { font-size: 18px !important; padding: 10px 26px !important; }
+.welcome-qr-box { padding: 16px !important; }
+.welcome-qr-box img { width: 240px !important; height: 240px !important; }
+.welcome-qr-label { font-size: 18px !important; }
+.welcome-counter { font-size: 20px !important; padding: 10px 24px !important; }
 
-/* Bigger comeback */
+/* Challenges screen */
+.section-title { font-size: clamp(36px, 4.5vw, 56px) !important; }
+.section-header .vote-live { font-size: 18px !important; }
+.ch-card .ch-title { font-size: 18px !important; }
+.ch-card .ch-emoji { font-size: 26px !important; }
 
-/* Bigger section titles */
-.section-title { font-size: clamp(28px, 3.5vw, 40px) !important; }
+/* Timer screen */
+.timer-display { font-size: clamp(120px, 16vw, 200px) !important; }
+.timer-label { font-size: 18px !important; }
+.timer-select { font-size: 16px !important; }
+.step-label { font-size: 14px !important; }
+
+/* Come back screen */
+.comeback-emoji { font-size: 100px !important; }
+.comeback-title { font-size: clamp(72px, 9vw, 120px) !important; }
+.comeback-sub { font-size: 28px !important; }
+.comeback-accent { font-size: 24px !important; }
+
+/* Vote screen */
+.vote-row { font-size: 16px !important; }
+.vote-row .vote-name { font-size: 18px !important; }
+.vote-total { font-size: 18px !important; }
+
+/* Winner screen */
+.winner-trophy { font-size: 100px !important; }
+.winner-name { font-size: clamp(56px, 7vw, 88px) !important; }
+.winner-pre { font-size: 36px !important; }
+.winner-prize { font-size: 22px !important; }
+.runner-up-name { font-size: 26px !important; }
+.runner-up-label { font-size: 16px !important; }
+.winner-challenge { font-size: 20px !important; }
+.btn-primary { font-size: 20px !important; padding: 18px 40px !important; }
 
 /* Blob celebration on winner screen */
 .winner-blobs {
