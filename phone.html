@@ -546,19 +546,12 @@ auth.signInAnonymously().then(r => {
     }
   });
 
-  // --- Feature 2: Screen sync with back freedom ---
+  // --- Screen sync: phone ALWAYS follows host ---
   db.ref('/currentScreen').on('value', snap => {
     const s = snap.val();
     if (s == null) return;
-    if (s !== lastPresenterScreen) {
-      // Presenter advanced to a new screen — pull user forward
-      lastPresenterScreen = s;
-      userOverride = false;
-      onScreenChange(s);
-    } else if (!userOverride && s !== displayedScreen) {
-      // Same presenter screen but user hasn't overridden — sync
-      onScreenChange(s);
-    }
+    lastPresenterScreen = s;
+    onScreenChange(s);
   });
 }).catch(e => console.error('Auth error', e));
 
