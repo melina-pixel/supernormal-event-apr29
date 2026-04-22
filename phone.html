@@ -573,14 +573,22 @@ $('joinForm').addEventListener('submit', e => {
   const name = $('teamInput').value.trim();
   if (!name || !uid) return;
   $('joinBtn').disabled = true;
-  db.ref('/teams/' + uid).set({ name, challenge: null, joinedAt: firebase.database.ServerValue.TIMESTAMP }).then(() => {
-    localStorage.setItem('sn_team', name);
-    localStorage.setItem('sn_uid', uid);
-    $('joinForm').style.display = 'none';
-    $('waiting').style.display = 'flex';
-    // Don't auto-advance — let the Firebase /currentScreen listener handle it
-    // This prevents jumping to challenges before the host is ready
-  }).catch(() => $('joinBtn').disabled = false);
+  // Use update (not set) so we keep the challenge if just changing name
+  var teamData = { name: name };
+  // Only set challenge/joinedAt if this is a brand new join (no existing team)
+  var isNewJoin = !localStorage.getItem('sn_team');
+  if (isNewJoin) {
+    teamData.challenge = null;
+    teamData.joinedAt = firebase.database.ServerValue.TIMESTAMP;
+    db.ref('/teams/' + uid).set(teamData);
+  } else {
+    db.ref('/teams/' + uid).update(teamData);
+  }
+  localStorage.setItem('sn_team', name);
+  localStorage.setItem('sn_uid', uid);
+  $('joinForm').style.display = 'none';
+  $('waiting').style.display = 'flex';
+  $('joinBtn').disabled = false;
 });
 
 // Screen 1: Pick
@@ -855,7 +863,7 @@ function renderTeams() {
       if (isSelf) {
         actionHTML = '<span class="you-label">Your team</span>';
       } else if (votedThis) {
-        actionHTML = '<span class="voted-check"><span>\u2713</span> Voted</span>';
+        actionHTML = '<button class="btn btn-vote vbtn-undo" data-uid="' + id + '" style="background:#00b894;color:#fff">✓ Voted</button>';
       } else {
         actionHTML = `<button class="btn btn-vote vbtn" data-uid="${id}"${myVote ? ' disabled' : ''}>Vote</button>`;
       }
@@ -864,6 +872,8 @@ function renderTeams() {
 
       const btn = row.querySelector('.vbtn');
       if (btn && !myVote) btn.addEventListener('click', e => { e.stopPropagation(); castVote(id); });
+      const undoBtn = row.querySelector('.vbtn-undo');
+      if (undoBtn) undoBtn.addEventListener('click', e => { e.stopPropagation(); undoVote(id); });
       list.appendChild(row);
     });
 
@@ -876,7 +886,6 @@ function renderTeams() {
 }
 function castVote(targetUid) {
   if (myVote) return;
-  // Animate the button
   const btn = document.querySelector(`.vbtn[data-uid="${targetUid}"]`);
   if (btn) { btn.classList.add('voted-anim'); btn.textContent = '\u2713'; }
   myVote = targetUid;
@@ -885,6 +894,13 @@ function castVote(targetUid) {
     db.ref('/votes/' + targetUid).transaction(v => (v || 0) + 1);
     renderTeams();
   }, 350);
+}
+function undoVote(targetUid) {
+  myVote = null;
+  db.ref('/votedUsers/' + uid).remove();
+  db.ref('/votes/' + targetUid).transaction(v => Math.max((v || 0) - 1, 0));
+  $('votedMsg').style.display = 'none';
+  renderTeams();
 }
 
 // Screen 5: Winner
