@@ -413,11 +413,11 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database(), auth = firebase.auth();
 
 const challenges = [
-  { id: 0, title: "Shark Tank Moment", emoji: "\u{1F988}", tag: "STARTUP", short: "Create a startup from scratch. Pitch it like you\u2019re asking for $5 million.", desc: "Open the Supernormal desktop app and start a meeting with your team \u2014 brainstorm ideas, use Supernormal for quick research if you need it, and validate concepts during the call. When you\u2019re done, use the meeting context in Supernormal to build the brand name, landing page copy, pitch deck with visuals, and a killer one-liner. Stand up and pitch it to the room." },
+  { id: 0, title: "Shark Tank Moment", emoji: "\u{1F988}", tag: "STARTUP", short: "Create a startup from scratch. Pitch it like you\u2019re asking for $5 million.", desc: "Record a meeting with your team to brainstorm and create a new brand \u2014 anything you\u2019d like. Use Supernormal for quick research if you need it, and validate concepts during the call. When you\u2019re done, use the meeting context in Supernormal to build the brand name, landing page copy, pitch deck with visuals, and a killer one-liner. Stand up and pitch it to the room." },
   { id: 1, title: "The Devil Wears Decks", emoji: "\u{1F460}", tag: "DESIGN", short: "Find the ugliest presentation on the internet. Make it beautiful.", desc: "Find the ugliest presentation you can online, or pick one from your own archive of shame. Open the Supernormal desktop app and record your team tearing it apart \u2014 use Supernormal for quick research on design trends if you need it. Then use the meeting context in Supernormal to rebuild it into something so polished the client thinks you hired a designer. Before/after reveal to the room." },
   { id: 2, title: "The Apprentice: Agency Edition", emoji: "\u{1F527}", tag: "AUTOMATION", short: "Pick the workflow that makes you want to scream. Build something that fixes it.", desc: "Pick the one workflow that makes you want to scream. Open the Supernormal desktop app and record your team venting about it \u2014 use Supernormal for quick research on solutions if you need it. Then use the meeting context + Claude to build a real tool or automation that solves it. Client onboarding, brief intake, reporting \u2014 whatever haunts you. Demo it working live." },
-  { id: 3, title: "Ocean\u2019s Eleven: The Intel Job", emoji: "\u{1F575}\uFE0F", tag: "STRATEGY", short: "Pick a competitor you\u2019d love to outsmart. Build a plan to take them down.", desc: "Pick a competitor you\u2019d love to outsmart. Open the Supernormal desktop app and record your team breaking down their weaknesses \u2014 use Supernormal for quick research on their positioning and gaps if you need it. Then use the meeting context in Supernormal to build a full competitive takedown \u2014 market maps, SWOT, visuals, and a strategy to steal their clients. Present it like a $50K consulting pitch." },
-  { id: 4, title: "Mad Men: AI Edition", emoji: "\u{1F3A8}", tag: "CAMPAIGN", short: "Pick a brand that deserves better. Build them a full campaign.", desc: "Pick a brand you think deserves a better campaign. Open the Supernormal desktop app and record your team riffing on ideas \u2014 use Supernormal for quick research on the brand and audience if you need it. Then use the meeting context in Supernormal to generate the full campaign \u2014 social creatives, copy, images, taglines, media plan. Present it like you\u2019re in the pitch room fighting for the account." },
+  { id: 3, title: "The Strategy Room", emoji: "\u{1F575}\uFE0F", tag: "STRATEGY", short: "Pick a brand you admire. Reverse-engineer their strategy and find their blind spots.", desc: "Pick a brand you admire. Open the Supernormal desktop app and record your team reverse-engineering their strategy \u2014 use Supernormal for quick research on their positioning, audience, and channels. Then use the meeting context in Supernormal to build a full strategy breakdown \u2014 market maps, SWOT, visuals, and a plan to outdo them. Present it like a $50K consulting pitch." },
+  { id: 4, title: "Moneyball", emoji: "\u{1F4CA}", tag: "ANALYTICS", short: "Take a messy dataset. Find the hidden story and present it like a million-dollar insight.", desc: "Find a messy dataset or pick a public one \u2014 Google Trends, social media analytics, industry reports, anything with numbers. Open the Supernormal desktop app and record your team digging into it \u2014 use Supernormal for quick research on benchmarks and context if you need it. Then use the meeting context in Supernormal to build a clean dashboard view, key insights with visualizations, and a recommendation deck. Present the story the data tells like you\u2019re pitching the board." },
   { id: 5, title: "Extreme Makeover: Brand Edition", emoji: "\u2728", tag: "BRANDING", short: "Pick a company with terrible branding. Give them the full glow-up.", desc: "Pick a company with branding so bad it hurts. Open the Supernormal desktop app and record your team roasting it \u2014 use Supernormal for quick research on brand trends if you need it. Then use the meeting context in Supernormal to deliver the full glow-up \u2014 new logo direction, brand voice, social templates, email signatures. Before/after reveal to the room." }
 ];
 
@@ -438,8 +438,8 @@ function updateNavUI(screenNum) {
   $('smTeamName').textContent = localStorage.getItem('sn_team') || '';
   // Change challenge button only on screens 1-2
   $('smChangeChallenge').style.display = (screenNum === 1 || screenNum === 2) ? '' : 'none';
-  // Back button: screens 1,3,4,5 (NOT 0 or 2)
-  $('navBack').style.display = (joined && [1,3,4,5].includes(screenNum)) ? 'flex' : 'none';
+  // Back button: screens 3,4,5 only (NOT 0, 1, or 2)
+  $('navBack').style.display = (joined && [3,4,5].includes(screenNum)) ? 'flex' : 'none';
 }
 
 function showScreen(n) {
@@ -585,7 +585,8 @@ $('joinForm').addEventListener('submit', e => {
     localStorage.setItem('sn_uid', uid);
     $('joinForm').style.display = 'none';
     $('waiting').style.display = 'flex';
-    if (lastPresenterScreen > 0) onScreenChange(lastPresenterScreen);
+    // Don't auto-advance — let the Firebase /currentScreen listener handle it
+    // This prevents jumping to challenges before the host is ready
   }).catch(() => $('joinBtn').disabled = false);
 });
 

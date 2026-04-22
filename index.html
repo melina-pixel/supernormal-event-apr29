@@ -433,19 +433,19 @@ html:fullscreen, html:-webkit-full-screen {
 .challenge-card[data-challenge="3"] .card-tag { color: #7c3aed; background: rgba(124,58,237,0.10); }
 .challenge-card[data-challenge="4"] .card-tag { color: #16a34a; background: rgba(22,163,74,0.10); }
 .challenge-card[data-challenge="5"] .card-tag { color: #ca8a04; background: rgba(202,138,4,0.10); }
-.challenge-card .card-emoji { font-size: 36px; margin-bottom: 6px; display: block; line-height: 1; }
+.challenge-card .card-emoji { font-size: 48px; margin-bottom: 8px; display: block; line-height: 1; }
 .challenge-card .card-tag {
   display: inline-block;
-  font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--accent); background: var(--accent-soft);
-  padding: 3px 10px; border-radius: 6px; margin-bottom: 8px;
+  padding: 4px 12px; border-radius: 6px; margin-bottom: 8px;
   width: fit-content;
 }
 .challenge-card .card-title {
-  font-size: 16px; font-weight: 700; margin-bottom: 4px; line-height: 1.2;
+  font-size: 20px; font-weight: 700; margin-bottom: 6px; line-height: 1.2;
 }
 .challenge-card .card-desc {
-  font-size: 14px; color: var(--text-muted); line-height: 1.4; margin-bottom: 4px;
+  font-size: 16px; color: var(--text-muted); line-height: 1.5; margin-bottom: 4px;
 }
 .challenge-card 
 
@@ -488,20 +488,20 @@ html:fullscreen, html:-webkit-full-screen {
 .modal-panel {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
   background: #ffffff; border: 1px solid var(--border);
-  border-radius: 16px; max-width: 560px; width: 90%; padding: 32px;
+  border-radius: 20px; max-width: 700px; width: 90%; padding: 44px;
   z-index: 9999; opacity: 0; pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
   box-shadow: var(--shadow-lg);
 }
 .modal-panel.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
-.modal-emoji { font-size: 32px; display: block; margin-bottom: 8px; }
+.modal-emoji { font-size: 48px; display: block; margin-bottom: 12px; }
 .modal-tag {
-  display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.05em;
+  display: inline-block; font-size: 13px; font-weight: 500; letter-spacing: 0.05em;
   text-transform: uppercase; color: var(--accent); background: var(--accent-soft);
-  padding: 3px 9px; border-radius: 4px; margin-bottom: 12px;
+  padding: 4px 12px; border-radius: 4px; margin-bottom: 14px;
 }
-.modal-title { font-size: 24px; font-weight: 700; margin-bottom: 14px; line-height: 1.2; color: var(--text); }
-.modal-desc { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
+.modal-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; line-height: 1.2; color: var(--text); }
+.modal-desc { font-size: 20px; color: var(--text-muted); line-height: 1.7; margin-bottom: 28px; }
 .modal-close-btn {
   background: var(--bg-subtle); border: 1px solid var(--border);
   color: var(--text-muted); font-size: 14px; font-weight: 500; padding: 8px 24px;
@@ -775,9 +775,15 @@ html:fullscreen, html:-webkit-full-screen {
 }
 .btn-primary:hover { filter: brightness(0.95); transform: scale(1.02); box-shadow: var(--shadow-md); }
 .winner-pre {
-  font-size: 18px; color: var(--text-muted); font-weight: 400;
-  opacity: 0; transition: opacity 0.8s ease;
-  margin-bottom: 16px;
+  font-size: clamp(80px, 12vw, 160px); color: var(--text); font-weight: 800;
+  opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease;
+  margin-bottom: 16px; letter-spacing: -0.03em;
+  transform: scale(0.5);
+}
+.winner-pre.show { transform: scale(1); }
+.winner-pre.countdown-text {
+  font-size: clamp(24px, 3vw, 36px); font-weight: 400; color: var(--text-muted);
+  transform: scale(1);
 }
 .winner-pre.show { opacity: 1; }
 .winner-trophy {
@@ -917,10 +923,12 @@ html:fullscreen, html:-webkit-full-screen {
   font-size: 20px;
   font-weight: 600;
   color: var(--accent);
-  opacity: 0.08;
+  opacity: 0.25;
   animation: winnerFloat ease-in-out infinite alternate;
-  filter: blur(2px);
+  transition: opacity 0.8s ease;
 }
+.winner-float-team.fade-out { opacity: 0; }
+.winner-float-emoji.fade-out { opacity: 0; transition: opacity 0.8s ease; }
 @keyframes winnerFloat {
   0% { transform: translate(0, 0) rotate(-3deg); }
   100% { transform: translate(20px, -20px) rotate(3deg); }
@@ -1360,9 +1368,9 @@ html:fullscreen, html:-webkit-full-screen {
 <!-- SCREEN 3: COME BACK -->
 <div class="screen" id="screen3">
   <div class="comeback-wrap">
-    <div class="comeback-emoji stagger-1">&#9200;</div>
+    <div class="comeback-emoji stagger-1">🚨</div>
     <div class="comeback-title stagger-2">Time&#8217;s Up!</div>
-    <div class="comeback-sub stagger-3">Head back to the group</div>
+    <div class="comeback-sub stagger-3">Head back to the meeting area</div>
     <div class="comeback-accent stagger-4">Presentations start now</div>
     <div class="comeback-teams" id="comebackTeams"></div>
   </div>
@@ -1463,17 +1471,17 @@ const challenges = [
   { id: 0, title: "Shark Tank Moment", emoji: "\u{1F988}", tag: "STARTUP", short: "Create a startup from scratch. Build the brand, pitch deck &amp; one-liner using Supernormal. Then pitch it to the room.<br><span class='card-steps'>Record meeting → Build with AI → Pitch live</span>" },
   { id: 1, title: "The Devil Wears Decks", emoji: "\u{1F460}", tag: "DESIGN", short: "Find a terrible presentation online. Use Supernormal to redesign it into something stunning. Before/after reveal.<br><span class='card-steps'>Find ugly deck → Record roast → Redesign with AI</span>" },
   { id: 2, title: "The Apprentice: Agency Edition", emoji: "\u{1F527}", tag: "AUTOMATION", short: "Pick a broken workflow. Use Supernormal + Claude to build a real automation that fixes it. Demo it live.<br><span class='card-steps'>Pick pain point → Record fix plan → Build & demo</span>" },
-  { id: 3, title: "Ocean\u2019s Eleven: The Intel Job", emoji: "\u{1F575}\uFE0F", tag: "STRATEGY", short: "Pick a competitor. Use Supernormal to build a full competitive teardown with visuals and strategy.<br><span class='card-steps'>Pick target → Record analysis → Build intel report</span>" },
-  { id: 4, title: "Mad Men: AI Edition", emoji: "\u{1F3A8}", tag: "CAMPAIGN", short: "Pick a brand. Use Supernormal to create a full ad campaign — creatives, copy, images, taglines. Pitch it.<br><span class='card-steps'>Pick brand → Record ideation → Create campaign</span>" },
+  { id: 3, title: "The Strategy Room", emoji: "\u{1F575}\uFE0F", tag: "STRATEGY", short: "Pick a brand you admire. Reverse-engineer their strategy, find their blind spots, and pitch how you\u2019d outdo them.<br><span class='card-steps'>Pick brand → Record analysis → Build strategy deck</span>" },
+  { id: 4, title: "Moneyball", emoji: "\u{1F4CA}", tag: "ANALYTICS", short: "Take a messy dataset. Use Supernormal to find the hidden story and present it like a million-dollar insight.<br><span class='card-steps'>Find data → Record analysis → Build insight deck</span>" },
   { id: 5, title: "Extreme Makeover: Brand Edition", emoji: "\u2728", tag: "BRANDING", short: "Pick a company with bad branding. Use Supernormal to deliver a full rebrand — logo, voice, templates.<br><span class='card-steps'>Pick company → Record roast → Deliver glow-up</span>" }
 ];
 
 const fullDescs = [
-  "Open the Supernormal desktop app and start a meeting with your team \u2014 brainstorm ideas, use Supernormal for quick research if you need it, and validate concepts during the call. When you\u2019re done, use the meeting context in Supernormal to build the brand name, landing page copy, pitch deck with visuals, and a killer one-liner. Stand up and pitch it to the room.",
+  "Record a meeting with your team to brainstorm and create a new brand \u2014 anything you\u2019d like. Use Supernormal for quick research if you need it, and validate concepts during the call. When you\u2019re done, use the meeting context in Supernormal to build the brand name, landing page copy, pitch deck with visuals, and a killer one-liner. Stand up and pitch it to the room.",
   "Find the ugliest presentation you can online, or pick one from your own archive of shame. Open the Supernormal desktop app and record your team tearing it apart \u2014 use Supernormal for quick research on design trends if you need it. Then use the meeting context in Supernormal to rebuild it into something so polished the client thinks you hired a designer. Before/after reveal to the room.",
   "Pick the one workflow that makes you want to scream. Open the Supernormal desktop app and record your team venting about it \u2014 use Supernormal for quick research on solutions if you need it. Then use the meeting context + Claude to build a real tool or automation that solves it. Client onboarding, brief intake, reporting \u2014 whatever haunts you. Demo it working live.",
-  "Pick a competitor you\u2019d love to outsmart. Open the Supernormal desktop app and record your team breaking down their weaknesses \u2014 use Supernormal for quick research on their positioning and gaps if you need it. Then use the meeting context in Supernormal to build a full competitive takedown \u2014 market maps, SWOT, visuals, and a strategy to steal their clients. Present it like a $50K consulting pitch.",
-  "Pick a brand you think deserves a better campaign. Open the Supernormal desktop app and record your team riffing on ideas \u2014 use Supernormal for quick research on the brand and audience if you need it. Then use the meeting context in Supernormal to generate the full campaign \u2014 social creatives, copy, images, taglines, media plan. Present it like you\u2019re in the pitch room fighting for the account.",
+  "Pick a brand you admire. Open the Supernormal desktop app and record your team reverse-engineering their strategy \u2014 use Supernormal for quick research on their positioning, audience, and channels. Then use the meeting context in Supernormal to build a full strategy breakdown \u2014 market maps, SWOT, visuals, and a plan to outdo them. Present it like a $50K consulting pitch.",
+  "Find a messy dataset or pick a public one \u2014 Google Trends, social media analytics, industry reports, anything with numbers. Open the Supernormal desktop app and record your team digging into it \u2014 use Supernormal for quick research on benchmarks and context if you need it. Then use the meeting context in Supernormal to build a clean dashboard view, key insights with visualizations, and a recommendation deck. Present the story the data tells like you\u2019re pitching the board.",
   "Pick a company with branding so bad it hurts. Open the Supernormal desktop app and record your team roasting it \u2014 use Supernormal for quick research on brand trends if you need it. Then use the meeting context in Supernormal to deliver the full glow-up \u2014 new logo direction, brand voice, social templates, email signatures. Before/after reveal to the room."
 ];
 
@@ -1485,7 +1493,8 @@ let teamsData = {};
 let votesData = {};
 
 // Init defaults
-db.ref('currentScreen').once('value', s => { if (!s.exists()) db.ref('currentScreen').set(0); });
+// Always reset to screen 0 on host load so phones don't get stale state
+db.ref('currentScreen').set(0);
 db.ref('timer').once('value', s => { if (!s.exists()) db.ref('timer').set({ totalSecs: 1200, running: false, startedAt: null }); });
 
 function buildDots() {
@@ -2013,18 +2022,35 @@ function revealWinner() {
       });
 
       // Dramatic reveal sequence
+      // 1. Show blobs with teams floating
       setTimeout(() => { document.getElementById('winnerBlobs').classList.add('show'); }, 200);
+
+      // 2. Fade out floating background teams + blobs before countdown
       setTimeout(() => {
-        document.getElementById('winnerPre').textContent = '3...';
-        document.getElementById('winnerPre').classList.add('show');
-      }, 1000);
-      setTimeout(() => { document.getElementById('winnerPre').textContent = '2...'; }, 2000);
-      setTimeout(() => { document.getElementById('winnerPre').textContent = '1...'; }, 3000);
+        document.querySelectorAll('.winner-float-team, .winner-float-emoji').forEach(el => el.classList.add('fade-out'));
+        document.getElementById('winnerBlobs').classList.remove('show');
+      }, 2000);
+
+      // 3. Big 3-2-1 countdown
+      var preEl = document.getElementById('winnerPre');
       setTimeout(() => {
-        document.getElementById('winnerPre').textContent = 'And the winner is...';
-        document.getElementById('winnerTrophy').classList.add('show');
+        preEl.textContent = '3';
+        preEl.className = 'winner-pre show';
+      }, 2800);
+      setTimeout(() => {
+        preEl.className = 'winner-pre';
+        setTimeout(() => { preEl.textContent = '2'; preEl.className = 'winner-pre show'; }, 200);
       }, 3800);
-      // 3-second suspense before revealing winner name
+      setTimeout(() => {
+        preEl.className = 'winner-pre';
+        setTimeout(() => { preEl.textContent = '1'; preEl.className = 'winner-pre show'; }, 200);
+      }, 4800);
+      setTimeout(() => {
+        preEl.className = 'winner-pre countdown-text show';
+        preEl.textContent = 'And the winner is...';
+        document.getElementById('winnerTrophy').classList.add('show');
+      }, 5800);
+      // Suspense before revealing winner name
       setTimeout(() => {
         if (winner) {
           document.getElementById('winnerName').textContent = winner.name;
@@ -2034,11 +2060,11 @@ function revealWinner() {
         document.getElementById('winnerChallenge').classList.add('show');
         playCheers();
         fireConfetti();
-      }, 4800);
+      }, 7000);
 
       setTimeout(() => {
         document.getElementById('winnerPrize').classList.add('show');
-      }, 5800);
+      }, 8000);
     });
   });
 }
