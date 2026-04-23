@@ -2015,10 +2015,15 @@ function revealWinner() {
         }))
         .sort((a, b) => b.count - a.count);
 
-      const winner = sorted[0] || null;
-      const runnerUpTeam = sorted[1] || null;
+      // Check for ties at the top
+      const topCount = sorted[0] ? sorted[0].count : 0;
+      const tiedWinners = sorted.filter(t => t.count === topCount && t.count > 0);
+      const winner = tiedWinners.length === 1 ? tiedWinners[0] : null;
+      const isTie = tiedWinners.length > 1;
+      const tieNames = isTie ? tiedWinners.map(t => t.name).join(' & ') : '';
+      const runnerUpTeam = isTie ? null : (sorted[1] || null);
 
-      db.ref('results').set({ winner, runnerUp: runnerUpTeam });
+      db.ref('results').set({ winner: winner || tiedWinners[0], runnerUp: runnerUpTeam });
 
       // Build team blobs around the reveal
       const blobEl = document.getElementById('winnerBlobs');
@@ -2062,7 +2067,10 @@ function revealWinner() {
       }, 5800);
       // Suspense before revealing winner name
       setTimeout(() => {
-        if (winner) {
+        if (isTie) {
+          document.getElementById('winnerName').textContent = tieNames;
+          document.getElementById('winnerChallenge').textContent = "It's a tie! 🤝";
+        } else if (winner) {
           document.getElementById('winnerName').textContent = winner.name;
           document.getElementById('winnerChallenge').textContent = winner.challenge ? winner.challenge.emoji + ' ' + winner.challenge.title : '';
         }
