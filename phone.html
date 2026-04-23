@@ -590,12 +590,15 @@ $('joinForm').addEventListener('submit', e => {
   $('joinForm').style.display = 'none';
   $('joinBtn').disabled = false;
 
-  // Late joiner: if TV is already past Welcome, go to the current screen
-  if (lastPresenterScreen >= 2) {
-    onScreenChange(lastPresenterScreen);
-  } else {
-    $('waiting').style.display = 'flex';
-  }
+  // Check TV's current screen fresh from Firebase and forward if needed
+  db.ref('currentScreen').once('value', function(snap) {
+    var tvScreen = snap.val() || 0;
+    if (tvScreen >= 2) {
+      onScreenChange(tvScreen);
+    } else {
+      $('waiting').style.display = 'flex';
+    }
+  });
 });
 
 // Screen 1: Pick
